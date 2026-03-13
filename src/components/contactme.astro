@@ -5,8 +5,22 @@
 <div id="container">
     <main>
         <section id="hero">
-            <h1>404</h1>
-            <p>Uh oh, the page you're looking for probably doesn't exist.</p>
+            <h1>So you want to contact me</h1>
+            <ul id="links">
+                <li>heya [at] slitro [dot] studio</li>
+                <li><a href="https://github.com/heycastawhat">Github</a></li>
+                <li><a href="https://last.fm/user/castawhat">Lastfm</a></li>
+                <li>
+                    <a href="https://monkeytype.com/user/castawhat"
+                        >Monkeytype</a
+                    >
+                </li>
+                <li>
+                    Hack Club Slack: If you need to talk to me on slack, find
+                    me.
+                </li>
+                <li>Phone: If you need this you have it</li>
+            </ul>
         </section>
     </main>
 </div>
@@ -36,11 +50,13 @@
     h1 {
         font-size: 22px;
         margin-top: 0.25em;
+        color: var(--ctp-text);
     }
 
     #links {
         display: flex;
         gap: 16px;
+        flex-direction: column;
     }
 
     #links a {

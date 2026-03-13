@@ -1,0 +1,205 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const apiKey = import.meta.env.LASTFM_API_KEY;
+const username = "castawhat";
+
+interface TrackImage {
+    size: string;
+    "#text": string;
+}
+
+interface Track {
+    name: string;
+    artist: {
+        "#text": string;
+    };
+    album: {
+        "#text": string;
+    };
+    image: TrackImage[];
+    "@attr"?: {
+        nowplaying: string;
+    };
+    date?: {
+        "#text": string;
+    };
+}
+
+let tracks: Track[] = [];
+let error: string | null = null;
+
+try {
+    const url = `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${username}&api_key=${apiKey}&format=json&limit=4`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.recenttracks && data.recenttracks.track) {
+        tracks = Array.isArray(data.recenttracks.track)
+            ? data.recenttracks.track.slice(0, 4)
+            : [data.recenttracks.track];
+    }
+} catch (e) {
+    error = "Failed to fetch Last.fm data";
+    console.error(error, e);
+}
+---
+
+<Layout>
+    <div class="stats-container">
+        <h1>What I'm Listening To</h1>
+
+        {error && <p class="error">{error}</p>}
+
+        <div class="tracks-grid">
+            {
+                tracks.map((track) => {
+                    const isNowPlaying = track["@attr"]?.nowplaying === "true";
+                    const largeImage = track.image.find(
+                        (img) =>
+                            img.size === "large" || img.size === "extralarge",
+                    );
+                    const imageUrl = largeImage?.["#text"] || "";
+
+                    return (
+                        <div
+                            class={`track-card ${isNowPlaying ? "now-playing" : ""}`}
+                        >
+                            {imageUrl && (
+                                <img
+                                    src={imageUrl}
+                                    alt={track.name}
+                                    class="track-image"
+                                />
+                            )}
+                            <div class="track-info">
+                                <h3 class="track-name">{track.name}</h3>
+                                <p class="artist-name">
+                                    {track.artist["#text"]}
+                                </p>
+                                <p class="album-name">{track.album["#text"]}</p>
+                                {isNowPlaying && (
+                                    <span class="now-playing-badge">
+                                        Now Playing
+                                    </span>
+                                )}
+                                {track.date && (
+                                    <p class="play-date">
+                                        {track.date["#text"]}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    );
+                })
+            }
+        </div>
+    </div>
+</Layout>
+
+<style>
+    .stats-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    h1 {
+        color: var(--ctp-text);
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .error {
+        color: var(--ctp-red);
+        padding: 1rem;
+        background: var(--ctp-surface0);
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .tracks-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .track-card {
+        background: var(--ctp-surface0);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.2s ease;
+        border: 1px solid var(--ctp-surface1);
+        display: flex;
+        gap: 1rem;
+    }
+
+    .track-card:hover {
+        border-color: var(--ctp-blue);
+        transform: translateY(-2px);
+    }
+
+    .track-card.now-playing {
+        border: 2px solid var(--ctp-blue);
+        background: var(--ctp-surface0);
+    }
+
+    .track-image {
+        width: 120px;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .track-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .track-name {
+        color: var(--ctp-text);
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .artist-name {
+        color: var(--ctp-blue);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .album-name {
+        color: var(--ctp-subtext1);
+        margin: 0;
+        font-size: 0.85rem;
+    }
+
+    .play-date {
+        color: var(--ctp-overlay1);
+        margin: 0;
+        font-size: 0.8rem;
+    }
+
+    .now-playing-badge {
+        display: inline-block;
+        background: var(--ctp-blue);
+        color: var(--ctp-crust);
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        width: fit-content;
+    }
+
+    @media (max-width: 768px) {
+        .tracks-grid {
+            grid-template-columns: 1fr;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
