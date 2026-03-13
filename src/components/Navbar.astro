@@ -1,0 +1,88 @@
+---
+
+---
+
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/" class="nav-logo">Site</a>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="/" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="/404" class="nav-link">404</a>
+            </li>
+            <li class="nav-item">
+                <a href="/photography" class="nav-link">Photography</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        background-color: var(--ctp-surface0);
+        border-bottom: 1px solid var(--ctp-surface1);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .nav-logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--ctp-blue);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .nav-logo:hover {
+        color: var(--ctp-sapphire);
+    }
+
+    .nav-menu {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 2rem;
+    }
+
+    .nav-item {
+        display: flex;
+    }
+
+    .nav-link {
+        color: var(--ctp-text);
+        text-decoration: none;
+        transition: color 0.2s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    .nav-link:hover {
+        color: var(--ctp-blue);
+        background-color: var(--ctp-surface1);
+    }
+
+    @media (max-width: 768px) {
+        .nav-menu {
+            gap: 1rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
