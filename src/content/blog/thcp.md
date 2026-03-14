@@ -1,9 +1,9 @@
 ---
-title: The Hack Club Problem
-published: 2025-11-21
-tags: [Post, Rant]  
-category: Rant
-draft: false  
+title: "The Hack Club Problem"
+description: "Thoughts on the Slack workflows removal and its impact on the community."
+date: 2025-11-21
+tags: ["post", "rant"]
+draft: false
 ---
 # UPDATE: HQ and community members are working on a fix. More details at bottom of post. 
 

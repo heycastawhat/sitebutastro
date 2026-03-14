@@ -1,9 +1,9 @@
 ---
-title: The Great Hack Club Slack Migration
-published: 2025-11-27
-tags: [Post, Rant]  
-category: Rant
-draft: false  
+title: "The Great Hack Club Slack Migration"
+description: "Thoughts on the Slack Enterprise Grid migration and its fallout."
+date: 2025-11-27
+tags: ["post", "rant"]
+draft: false
 ---
 On Monday at 10am EST, the Hack Club Slack went down for the long-awaited migration to Slack’s Enterprise Grid.
 

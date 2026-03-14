@@ -1,9 +1,9 @@
 ---
-title: I made a slack bot!
-published: 2025-12-29
-tags: [Post, Ship]  
-category: Ship
-draft: false  
+title: "I made a slack bot!"
+description: "How Slack Annoyance grew from a simple now-playing bot into a multi-purpose helper."
+date: 2025-12-29
+tags: ["post", "ship"]
+draft: false
 ---
 **I made a Slack bot!**
 
