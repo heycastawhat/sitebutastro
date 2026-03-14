@@ -5,21 +5,22 @@
 <div id="container">
     <main>
         <section id="hero">
-            <h1>Hello! I am making v4 of my site using astro!</h1>
-            <section id="links">
-                <a class="button" href="https://docs.astro.build"
-                    >Read our docs</a
-                >
-            </section>
+            <h1>Heyo!</h1>
+            <h3>Welcome to my little corner of the internet!</h3>
+            <p>
+                Im Josh, a 'web dev' and tech enthusiast. <br />Im a member of
+                hack club, where Ill hopefully enhance my skills and connect
+                with likeminded others and make cool projects! <br />At the
+                moment, I'm in to Hardware, Gamedev, Homelabbing and much more!<br
+                />Like all personal sites, this is always a work in progress and
+                is updated whenever I feel like it.
+            </p>
         </section>
     </main>
 </div>
 
 <style>
     #container {
-        font-family:
-            Inter, Roboto, "Helvetica Neue", "Arial Nova", "Nimbus Sans", Arial,
-            sans-serif;
         height: 100%;
     }
 
@@ -27,6 +28,7 @@
         height: 100%;
         display: flex;
         justify-content: center;
+        text-align: center;
     }
 
     #hero {
@@ -40,6 +42,8 @@
     h1 {
         font-size: 22px;
         margin-top: 0.25em;
+        color: var(--ctp-lavender);
+        text-align: center;
     }
 
     #links {
@@ -95,12 +99,19 @@
     h2 {
         margin: 0 0 1em;
         font-weight: normal;
-        color: #111827;
+        color: var(--ctp-blue);
+        font-size: 20px;
+    }
+
+    h3 {
+        margin: 0 0 1em;
+        font-weight: normal;
+        color: var(--ctp-blue);
         font-size: 20px;
     }
 
     p {
-        color: #4b5563;
+        color: var(--ctp-text);
         font-size: 16px;
         line-height: 24px;
         letter-spacing: -0.006em;
