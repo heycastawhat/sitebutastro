@@ -1,8 +1,9 @@
 ---
-title: Ditching VSCode for Zed
-published: 2026-3-13
-tags: [Post]  
-draft: false  
+title: "Ditching VSCode for Zed"
+description: "Why I'm switching editors and what I like about Zed so far."
+date: 2026-03-13
+tags: ["post"]
+draft: false
 ---
 # I'm Switching to Zed.
 
