@@ -1,5 +1,18 @@
 ---
 import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+    footerType?: "home" | "default";
+    footerComment?: string;
+    commentLink?: string;
+}
+
+const {
+    footerType = "default",
+    footerComment = "",
+    commentLink = "",
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -16,8 +29,15 @@ import Navbar from "../components/Navbar.astro";
         </style>
     </head>
     <body>
-        <Navbar />
-        <slot />
+        <div style="flex: 1;">
+            <Navbar />
+            <slot />
+        </div>
+        <Footer
+            type={footerType}
+            comment={footerComment}
+            commentLink={commentLink}
+        />
     </body>
 </html>
 
@@ -63,5 +83,7 @@ import Navbar from "../components/Navbar.astro";
         background-color: var(--ctp-base);
         color: var(--ctp-text);
         font-family: "ABeeZee", sans-serif;
+        display: flex;
+        flex-direction: column;
     }
 </style>

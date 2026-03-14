@@ -1,23 +1,173 @@
 ---
+import { Image } from "astro:assets";
+import pfp from "../assets/pfp.jpeg";
+import slitro from "../assets/88by31/Slitro.png";
+import anythingbut from "../assets/88by31/anythingbut.gif";
+import applelogo from "../assets/88by31/applelogo.gif";
+import chrome from "../assets/88by31/chrome.gif";
+import firefox from "../assets/88by31/firefox.gif";
+import getfirefox from "../assets/88by31/getfirefox-button.gif";
+import htmllearn from "../assets/88by31/html_learn_it_today.gif";
+import mac from "../assets/88by31/mac.gif";
+import microhate from "../assets/88by31/microhate.jpg";
+import ingo from "../assets/88by31/ingo.png";
+import notoverkill from "../assets/88by31/notoverkill.gif";
+import vscbutton from "../assets/88by31/vscbutton.gif";
+import web3 from "../assets/88by31/web3.gif";
 
+const externalButtons = [
+    {
+        url: "https://slitro.studio",
+        imgSrc: slitro,
+        alt: "Slitro",
+    },
+    {
+        url: "#",
+        imgSrc: anythingbut,
+        alt: "Anything But",
+    },
+    {
+        url: "#",
+        imgSrc: applelogo,
+        alt: "Apple Logo",
+    },
+    {
+        url: "#",
+        imgSrc: chrome,
+        alt: "Chrome",
+    },
+    {
+        url: "#",
+        imgSrc: firefox,
+        alt: "Firefox",
+    },
+    {
+        url: "#",
+        imgSrc: getfirefox,
+        alt: "Get Firefox",
+    },
+    {
+        url: "#",
+        imgSrc: htmllearn,
+        alt: "HTML Learn It Today",
+    },
+    {
+        url: "#",
+        imgSrc: mac,
+        alt: "Mac",
+    },
+    {
+        url: "#",
+        imgSrc: microhate,
+        alt: "Microhate",
+    },
+    {
+        url: "https://ingo.au",
+        imgSrc: ingo,
+        alt: "Ingo",
+    },
+    {
+        url: "https://notoverkill.com",
+        imgSrc: notoverkill,
+        alt: "Not Overkill",
+    },
+    {
+        url: "#",
+        imgSrc: vscbutton,
+        alt: "VS Code",
+    },
+    {
+        url: "#",
+        imgSrc: web3,
+        alt: "Web3",
+    },
+    {
+        url: "https://codingcorner.dev/",
+        imgSrc: "https://codingcorner.dev/buttons/codingcorner.png",
+        alt: "Coding Corner",
+    },
+];
 ---
 
 <div id="container">
     <main>
         <section id="hero">
-            <h1>Heyo!</h1>
-            <h3>Welcome to my little corner of the internet!</h3>
-            <p>
-                Im Josh, a 'web dev' and tech enthusiast. <br />Im a member of
-                hack club, where Ill hopefully enhance my skills and connect
-                with likeminded others and make cool projects! <br />At the
-                moment, I'm in to Hardware, Gamedev, Homelabbing and much more!<br
-                />Like all personal sites, this is always a work in progress and
-                is updated whenever I feel like it.
-            </p>
+            <div class="hero-box">
+                <h1>Heyo!</h1>
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h3>Welcome to my little corner of the internet!</h3>
+                        <p>
+                            Im Josh, a 'web dev' and tech enthusiast. <br />Im a
+                            member of hack club, where Ill hopefully enhance my
+                            skills and connect with likeminded others and make
+                            cool projects! <br />At the moment, I'm in to
+                            Hardware, Gamedev, Homelabbing and much more!<br
+                            />Like all personal sites, this is always a work in
+                            progress and is updated whenever I feel like it.
+                        </p>
+                    </div>
+                    <Image src={pfp} alt="Profile picture" class="hero-image" />
+                </div>
+            </div>
+            <section id="buttons-section">
+                <div class="win98-window">
+                    <div class="win98-titlebar">
+                        <h2>88x31 Buttons</h2>
+                        <button
+                            class="copy-btn"
+                            data-html='<a href="https://slitro.studio"><img src="https://slitro.studio/src/assets/88by31/Slitro.png" alt="Slitro" width="88" height="31"></a>'
+                            title="Copy HTML">COPY</button
+                        >
+                    </div>
+                    <div class="win98-content">
+                        {
+                            externalButtons.map((button) => (
+                                <div class="button-item">
+                                    <a
+                                        href={button.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {typeof button.imgSrc === "string" &&
+                                        button.imgSrc.startsWith("http") ? (
+                                            <img
+                                                src={button.imgSrc}
+                                                alt={button.alt}
+                                                width="88"
+                                                height="31"
+                                            />
+                                        ) : (
+                                            <Image
+                                                src={button.imgSrc}
+                                                alt={button.alt}
+                                            />
+                                        )}
+                                    </a>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </div>
+            </section>
         </section>
     </main>
 </div>
+
+<script>
+    document.querySelectorAll(".copy-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const html = btn.getAttribute("data-html");
+            navigator.clipboard.writeText(html).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = "OK";
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        });
+    });
+</script>
 
 <style>
     #container {
@@ -40,67 +190,38 @@
     }
 
     h1 {
-        font-size: 22px;
-        margin-top: 0.25em;
+        font-size: 48px;
+        margin-top: 0;
+        margin-bottom: 1rem;
         color: var(--ctp-lavender);
-        text-align: center;
     }
 
-    #links {
+    .hero-box {
+        border: 2px solid var(--ctp-sapphire);
+        border-radius: 24px;
+        padding: 3rem;
+        margin-top: 1.5rem;
+        max-width: 600px;
+    }
+
+    .hero-content {
         display: flex;
-        gap: 16px;
+        gap: 2rem;
+        align-items: flex-start;
+        justify-content: space-between;
     }
 
-    #links a {
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        color: #111827;
-        text-decoration: none;
-        transition: color 0.2s;
+    .hero-text {
+        flex: 1;
+        text-align: left;
     }
 
-    #links a:hover {
-        color: rgb(78, 80, 86);
-    }
-
-    #links a svg {
-        height: 1em;
-        margin-left: 8px;
-    }
-
-    #links a.button {
-        color: var(--ctp-overlay1);
-        background: transparent;
-        border: 2px solid var(--ctp-overlay1);
+    .hero-image {
+        width: 200px;
+        height: 200px;
         border-radius: 16px;
-        padding: 12px 24px;
-        transition: all 0.2s ease;
-    }
-
-    #links a.button:hover {
-        color: var(--ctp-crust);
-        background: var(--ctp-overlay1);
-        border-color: var(--ctp-overlay1);
-    }
-
-    pre {
-        font-family:
-            ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas,
-            "DejaVu Sans Mono", monospace;
-        font-weight: normal;
-        background: linear-gradient(14deg, #d83333 0%, #f041ff 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0;
-    }
-
-    h2 {
-        margin: 0 0 1em;
-        font-weight: normal;
-        color: var(--ctp-blue);
-        font-size: 20px;
+        flex-shrink: 0;
+        object-fit: cover;
     }
 
     h3 {
@@ -118,42 +239,108 @@
         margin: 0;
     }
 
-    code {
-        display: inline-block;
-        background:
-            linear-gradient(66.77deg, #f3cddd 0%, #f5cee7 100%) padding-box,
-            linear-gradient(155deg, #d83333 0%, #f041ff 18%, #f5cee7 45%)
-                border-box;
-        border-radius: 8px;
-        border: 1px solid transparent;
-        padding: 6px 8px;
+    #buttons-section {
+        margin-top: 3rem;
+        width: 100%;
+        max-width: 700px;
     }
 
-    .box {
-        padding: 16px;
-        background: rgba(255, 255, 255, 1);
-        border-radius: 16px;
-        border: 1px solid white;
+    .win98-window {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        box-shadow:
+            inset 1px 1px 0 #ffffff,
+            inset -1px -1px 0 #000000;
+        display: flex;
+        flex-direction: column;
     }
 
-    #news {
-        position: absolute;
-        bottom: 16px;
-        right: 16px;
-        max-width: 300px;
-        text-decoration: none;
-        transition: background 0.2s;
-        backdrop-filter: blur(50px);
+    .win98-titlebar {
+        background: linear-gradient(90deg, #000080 0%, #1084d7 100%);
+        color: white;
+        padding: 4px 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "ABeeZee", sans-serif;
+        font-weight: bold;
+        font-size: 0.6rem;
+        border: 1px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
     }
 
-    #news:hover {
-        background: rgba(255, 255, 255, 0.55);
+    .win98-titlebar h2 {
+        margin: 0;
+        padding: 1px 2px;
+        color: white;
+        font-size: 1.2rem;
+        flex: 1;
+        font-weight: bold;
+        font-family: "ABeeZee", sans-serif;
     }
 
-    @media screen and (max-height: 368px) {
-        #news {
-            display: none;
-        }
+    .copy-btn {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 2px 6px;
+        cursor: pointer;
+        font-size: 0.55rem;
+        font-weight: bold;
+        font-family: "ABeeZee", sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.1s;
+        color: #000000;
+    }
+
+    .copy-btn:active {
+        border-color: #808080 #dfdfdf #dfdfdf #808080;
+        transform: translateY(1px) translateX(1px);
+    }
+
+    .copy-btn:hover {
+        background: #e0e0e0;
+    }
+
+    .win98-content {
+        padding: 4px;
+        background: #c0c0c0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        justify-items: center;
+    }
+
+    .button-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 0.5rem;
+        transition: transform 0.1s;
+    }
+
+    .button-item:active {
+        border-color: #808080 #dfdfdf #dfdfdf #808080;
+        transform: translateY(1px) translateX(1px);
+    }
+
+    .button-item a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .button-item img {
+        width: 120px;
+        height: auto;
+        object-fit: contain;
+        pointer-events: none;
     }
 
     @media screen and (max-width: 768px) {
@@ -167,23 +354,37 @@
             padding-top: 10%;
         }
 
-        #links {
-            flex-wrap: wrap;
+        h1 {
+            line-height: 1.5;
         }
 
-        #links a.button {
-            padding: 14px 18px;
-        }
-
-        #news {
-            right: 16px;
-            left: 16px;
-            bottom: 2.5rem;
+        .hero-box {
+            padding: 2rem;
+            border-radius: 16px;
             max-width: 100%;
         }
 
-        h1 {
-            line-height: 1.5;
+        .hero-content {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hero-text {
+            text-align: center;
+        }
+
+        .hero-image {
+            width: 120px;
+            height: 120px;
+        }
+
+        .win98-content {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .button-item img {
+            width: 120px;
+            height: 120px;
         }
     }
 </style>

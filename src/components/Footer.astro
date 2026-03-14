@@ -1,0 +1,82 @@
+---
+interface Props {
+    type?: "home" | "default";
+    comment?: string;
+    commentLink?: string;
+}
+
+const { type = "default", comment = "", commentLink = "" } = Astro.props;
+---
+
+<footer class="footer">
+    {
+        type === "home" ? (
+            <div class="footer-content">
+                <p class="footer-text">Site version v4.0.0 Astro</p>
+                <a href="#" class="footer-link">
+                    Changelog
+                </a>
+            </div>
+        ) : (
+            <div class="footer-content">
+                {commentLink ? (
+                    <a href={commentLink} class="footer-text footer-link">
+                        {comment}
+                    </a>
+                ) : (
+                    <p class="footer-text">{comment}</p>
+                )}
+                <a href="/" class="footer-link">
+                    ← Back
+                </a>
+            </div>
+        )
+    }
+</footer>
+
+<style>
+    .footer {
+        background-color: var(--ctp-surface0);
+        border-top: 1px solid var(--ctp-surface1);
+        padding: 1.5rem 1rem;
+        margin-top: 2rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .footer-text {
+        color: var(--ctp-subtext1);
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .footer-link {
+        color: var(--ctp-blue);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .footer-link:hover {
+        color: var(--ctp-lavender);
+    }
+
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>

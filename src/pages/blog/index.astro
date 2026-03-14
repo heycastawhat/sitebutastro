@@ -1,0 +1,90 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog"))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout footerType="default" footerComment="blog index">
+  <section class="blog-index">
+    <h1>Blog</h1>
+    <p class="intro">Latest posts and updates.</p>
+
+    <div class="post-list">
+      {posts.map((post) => (
+        <article class="post-card">
+          <h2>
+            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+          </h2>
+          <p class="meta">
+            {post.data.date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
+          <p class="desc">{post.data.description}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .blog-index {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    color: var(--ctp-lavender);
+    font-size: 2.5rem;
+  }
+
+  .intro {
+    color: var(--ctp-subtext1);
+    margin: 0 0 2rem;
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    background: var(--ctp-surface0);
+    border: 1px solid var(--ctp-surface1);
+    border-radius: 12px;
+    padding: 1.25rem;
+  }
+
+  .post-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.4rem;
+  }
+
+  .post-card a {
+    color: var(--ctp-blue);
+    text-decoration: none;
+  }
+
+  .post-card a:hover {
+    color: var(--ctp-lavender);
+  }
+
+  .meta {
+    margin: 0 0 0.75rem;
+    color: var(--ctp-overlay1);
+    font-size: 0.9rem;
+  }
+
+  .desc {
+    margin: 0;
+    color: var(--ctp-text);
+  }
+</style>

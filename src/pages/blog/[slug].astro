@@ -1,0 +1,107 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout footerType="default" footerComment="blog post">
+  <article class="post">
+    <header>
+      <h1>{post.data.title}</h1>
+      <p class="meta">
+        {post.data.date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })}
+      </p>
+      <p class="desc">{post.data.description}</p>
+      {post.data.tags?.length > 0 && (
+        <ul class="tags">
+          {post.data.tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )}
+    </header>
+
+    <div class="content">
+      <Content />
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .post {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  h1 {
+    margin: 0 0 0.5rem;
+    color: var(--ctp-lavender);
+    font-size: 2.5rem;
+  }
+
+  .meta {
+    margin: 0 0 0.75rem;
+    color: var(--ctp-overlay1);
+    font-size: 0.9rem;
+  }
+
+  .desc {
+    margin: 0 0 1.5rem;
+    color: var(--ctp-subtext1);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem;
+  }
+
+  .tags li {
+    background: var(--ctp-surface0);
+    border: 1px solid var(--ctp-surface1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    color: var(--ctp-text);
+    font-size: 0.8rem;
+  }
+
+  .content :global(p) {
+    color: var(--ctp-text);
+    line-height: 1.7;
+    margin: 0 0 1rem;
+  }
+
+  .content :global(h2),
+  .content :global(h3),
+  .content :global(h4) {
+    color: var(--ctp-blue);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .content :global(a) {
+    color: var(--ctp-sapphire);
+    text-decoration: none;
+  }
+
+  .content :global(a:hover) {
+    color: var(--ctp-lavender);
+  }
+</style>
