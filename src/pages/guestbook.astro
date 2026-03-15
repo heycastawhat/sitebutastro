@@ -1,0 +1,218 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Guestbook">
+  <main>
+    <h1>Guestbook</h1>
+    <p>Leave a message in the guestbook!</p>
+
+    <div class="guestbook-container">
+      <form id="message-form" class="win98-window">
+        <div class="win98-titlebar">
+          <h2>Sign the Guestbook</h2>
+        </div>
+        <div class="form-content">
+          <input type="text" id="author" placeholder="Your Name" required />
+          <textarea id="body" placeholder="Your Message" required rows="3"></textarea>
+          <button type="submit" id="submit-btn">Sign</button>
+        </div>
+      </form>
+
+      <div id="messages" class="messages-list">
+        <p>Loading messages...</p>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { ConvexClient } from "convex/browser";
+  import { api } from "../../convex/_generated/api";
+
+  // Connect to the Convex backend using the URL provided by your environment.
+  // In Vercel, make sure you add PUBLIC_CONVEX_URL to your Environment Variables!
+  const client = new ConvexClient(import.meta.env.PUBLIC_CONVEX_URL);
+
+  const messagesDiv = document.getElementById("messages");
+  const form = document.getElementById("message-form");
+  const authorInput = document.getElementById("author") as HTMLInputElement;
+  const bodyInput = document.getElementById("body") as HTMLTextAreaElement;
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+
+  if (messagesDiv && form && authorInput && bodyInput && submitBtn) {
+    // 1. Subscribe to live updates from the database
+    client.onUpdate(api.messages.list, {}, (messages) => {
+      messagesDiv.innerHTML = "";
+
+      if (messages.length === 0) {
+        messagesDiv.innerHTML = "<p>No messages yet. Be the first!</p>";
+        return;
+      }
+
+      messages.forEach((msg) => {
+        const msgEl = document.createElement("div");
+        msgEl.className = "message win98-window";
+
+        const date = new Date(msg._creationTime).toLocaleDateString();
+
+        msgEl.innerHTML = `
+          <div class="win98-titlebar">
+            <strong>${escapeHTML(msg.author)}</strong> - <span>${date}</span>
+          </div>
+          <div class="message-body">${escapeHTML(msg.body)}</div>
+        `;
+        messagesDiv.appendChild(msgEl);
+      });
+    });
+
+    // 2. Handle form submission
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+
+      try {
+        await client.mutation(api.messages.send, {
+          author: authorInput.value,
+          body: bodyInput.value,
+        });
+        // Clear inputs on success
+        authorInput.value = "";
+        bodyInput.value = "";
+      } catch (err) {
+        alert("Failed to send message.");
+        console.error(err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Sign";
+      }
+    });
+  }
+
+  // Utility to prevent XSS (cross-site scripting) attacks
+  function escapeHTML(str: string) {
+    return str.replace(/[&<>'"]/g,
+      tag => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          "'": '&#39;',
+          '"': '&quot;'
+        }[tag] || tag)
+    );
+  }
+</script>
+
+<style>
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--ctp-text);
+  }
+
+  h1 {
+    color: var(--ctp-lavender);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    margin-bottom: 2rem;
+  }
+
+  .guestbook-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .win98-window {
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #dfdfdf #808080 #808080 #dfdfdf;
+    color: black;
+    box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000;
+  }
+
+  .win98-titlebar {
+    background: linear-gradient(90deg, #000080 0%, #1084d7 100%);
+    color: white;
+    padding: 4px 6px;
+    font-weight: bold;
+    font-family: "ABeeZee", sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
+  .win98-titlebar h2 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+  }
+
+  .form-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: #c0c0c0;
+  }
+
+  input, textarea {
+    padding: 0.5rem;
+    border: 2px solid;
+    border-color: #808080 #dfdfdf #dfdfdf #808080;
+    background: white;
+    font-family: "ABeeZee", sans-serif;
+    box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff;
+  }
+
+  button {
+    background: #c0c0c0;
+    border: 2px solid;
+    border-color: #dfdfdf #808080 #808080 #dfdfdf;
+    box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: "ABeeZee", sans-serif;
+    margin-top: 0.5rem;
+  }
+
+  button:active {
+    border-color: #808080 #dfdfdf #dfdfdf #808080;
+    box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff;
+    transform: translateY(1px) translateX(1px);
+  }
+
+  button:disabled {
+    color: #808080;
+    text-shadow: 1px 1px 0 #ffffff;
+    cursor: not-allowed;
+  }
+
+  .messages-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  :global(.message) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.message-body) {
+    padding: 1rem;
+    background: #fff;
+    margin: 2px;
+    border: 2px solid;
+    border-color: #808080 #dfdfdf #dfdfdf #808080;
+    box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff;
+    font-family: "ABeeZee", sans-serif;
+    white-space: pre-wrap;
+  }
+</style>

@@ -14,6 +14,13 @@ import ingo from "../assets/88by31/ingo.png";
 import notoverkill from "../assets/88by31/notoverkill.gif";
 import vscbutton from "../assets/88by31/vscbutton.gif";
 import web3 from "../assets/88by31/web3.gif";
+import convex from "../assets/88by31/convex.gif";
+import ctp from "../assets/88by31/ctp.webp";
+import github from "../assets/88by31/github.png";
+import hackclub from "../assets/88by31/hackclub.gif";
+import homeassistant from "../assets/88by31/home-assistant.gif";
+import macosmade from "../assets/88by31/macosmade.gif";
+import ultrafastparrot from "../assets/88by31/ultrafastparrot.gif";
 
 const externalButtons = [
     {
@@ -85,6 +92,41 @@ const externalButtons = [
         url: "https://codingcorner.dev/",
         imgSrc: "https://codingcorner.dev/buttons/codingcorner.png",
         alt: "Coding Corner",
+    },
+    {
+        url: "#",
+        imgSrc: convex,
+        alt: "Convex",
+    },
+    {
+        url: "#",
+        imgSrc: ctp,
+        alt: "Catppuccin",
+    },
+    {
+        url: "#",
+        imgSrc: github,
+        alt: "GitHub",
+    },
+    {
+        url: "#",
+        imgSrc: hackclub,
+        alt: "Hack Club",
+    },
+    {
+        url: "#",
+        imgSrc: homeassistant,
+        alt: "Home Assistant",
+    },
+    {
+        url: "#",
+        imgSrc: macosmade,
+        alt: "macOS Made",
+    },
+    {
+        url: "#",
+        imgSrc: ultrafastparrot,
+        alt: "Ultra Fast Parrot",
     },
 ];
 ---
@@ -318,15 +360,10 @@ const externalButtons = [
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #c0c0c0;
-        border: 2px solid;
-        border-color: #dfdfdf #808080 #808080 #dfdfdf;
-        padding: 0.5rem;
         transition: transform 0.1s;
     }
 
     .button-item:active {
-        border-color: #808080 #dfdfdf #dfdfdf #808080;
         transform: translateY(1px) translateX(1px);
     }
 
