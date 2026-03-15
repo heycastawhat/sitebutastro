@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import GuestbookApp from '../components/GuestbookApp';
-import GuestbookProvider from '../components/GuestbookProvider';
+import GuestbookWrapper from '../components/GuestbookWrapper';
 ---
 
 <Layout title="Guestbook">
@@ -9,10 +8,8 @@ import GuestbookProvider from '../components/GuestbookProvider';
     <h1>Guestbook</h1>
     <p>Leave a message in the guestbook!</p>
 
-    <!-- Wrap the interactive React app with the Convex provider -->
-    <GuestbookProvider client:load>
-      <GuestbookApp client:load />
-    </GuestbookProvider>
+    <!-- Wrap the interactive React app with the Convex provider using client:only to avoid SSR context errors -->
+    <GuestbookWrapper client:only="react" />
   </main>
 </Layout>
 
