@@ -11,6 +11,7 @@ export default function GuestbookApp() {
 
   const [body, setBody] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +21,8 @@ export default function GuestbookApp() {
     try {
       await sendMessage({ body });
       setBody("");
+      setSubmitted(true);
+      setTimeout(() => setSubmitted(false), 4000);
     } catch (err) {
       console.error(err);
       alert("Failed to send message.");
@@ -63,6 +66,11 @@ export default function GuestbookApp() {
                   boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff"
                 }}
               />
+              {submitted && (
+                <p style={{ color: "#008000", fontWeight: "bold", margin: 0 }}>
+                  Message sent! It will appear once approved.
+                </p>
+              )}
               <button
                 type="submit"
                 disabled={isSubmitting}
