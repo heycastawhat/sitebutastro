@@ -3,23 +3,17 @@ import Layout from '../layouts/Layout.astro';
 import AdminWrapper from '../components/AdminWrapper';
 ---
 
-<Layout>
+<Layout title="Admin — Site V4">
   <main>
-    <h1>Admin Panel</h1>
     <AdminWrapper client:only="react" />
   </main>
 </Layout>
 
 <style>
   main {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
     color: var(--ctp-text);
-  }
-
-  h1 {
-    color: var(--ctp-lavender);
-    margin-bottom: 1.5rem;
   }
 </style>

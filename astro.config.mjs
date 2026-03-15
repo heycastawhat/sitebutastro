@@ -4,5 +4,9 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://castawhat.com',
   integrations: [react()],
+  prefetch: {
+    prefetchAll: true,
+  },
 });

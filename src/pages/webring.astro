@@ -1,0 +1,127 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Webring — Site V4" footerType="default" footerComment="round and round we go">
+    <section class="webring-page">
+        <h1>Webrings are cool.</h1>
+        <h2>Here are some various webrings I'm in.</h2>
+        <p class="intro">If you have a cool one to join, slide into my emails at hey (at) slitrostudio (dot) me</p>
+
+        <div class="ring-list">
+            <div class="ring-card">
+                <h3>Ultrafastparrot Webring</h3>
+                <div class="ring-nav pill">
+                    <a href="https://ultrafastparrot.net/prev/josh" class="ring-btn">&larr;</a>
+                    <a href="https://ultrafastparrot.net/" class="ring-btn ring-home">Ultrafastparrot Webring</a>
+                    <a href="https://ultrafastparrot.net/next/josh" class="ring-btn">&rarr;</a>
+                </div>
+            </div>
+
+            <div class="ring-card">
+                <h3>Webmaster Webring</h3>
+                <div class="ring-nav">
+                    <map name="badge-wwstamp">
+                        <area shape="rect" coords="66,38,79,49" href="https://webmasterwebring.netlify.app?castawhat-previous" alt="Previous">
+                        <area shape="rect" coords="78,29,90,40" href="https://webmasterwebring.netlify.app?castawhat-next" alt="Next">
+                        <area shape="rect" coords="13,15,63,47" href="https://webmasterwebring.netlify.app" alt="Webmaster Webring">
+                    </map>
+                    <img usemap="#badge-wwstamp" id="ww-stamp" src="https://file.garden/ZrZSgsrYfQXsO7QH/ww/stamp.png" alt="Webmaster Webring" width="99" height="56">
+                </div>
+            </div>
+
+            <div class="ring-card">
+                <h3>Catppuccin Webring</h3>
+                <div class="ring-nav pill">
+                    <a href="https://ctp-webr.ing/castawhat/previous" class="ring-btn">&larr;</a>
+                    <a href="https://ctp-webr.ing/" class="ring-btn ring-home">Catppuccin Webring</a>
+                    <a href="https://ctp-webr.ing/castawhat/next" class="ring-btn">&rarr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .webring-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+    }
+
+    h1 {
+        margin: 0 0 0.5rem;
+        color: var(--ctp-lavender);
+        font-size: 2.5rem;
+    }
+
+    h2 {
+        color: var(--ctp-blue);
+        font-size: 1.3rem;
+        margin: 0 0 0.5rem;
+    }
+
+    .intro {
+        color: var(--ctp-subtext1);
+        margin: 0 0 2rem;
+    }
+
+    .ring-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .ring-card {
+        background: var(--ctp-surface0);
+        border: 1px solid var(--ctp-surface1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .ring-card h3 {
+        margin: 0 0 1rem;
+        font-size: 1.4rem;
+        color: var(--ctp-blue);
+    }
+
+    .ring-nav {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+    }
+
+    .pill {
+        display: inline-flex;
+        background: var(--ctp-surface1);
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .ring-btn {
+        color: var(--ctp-rosewater);
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        transition: background-color 0.2s ease;
+    }
+
+    .ring-btn:hover {
+        background: var(--ctp-surface2);
+    }
+
+    .ring-home {
+        padding: 0.5rem 1.25rem;
+    }
+
+    #ww-stamp {
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
