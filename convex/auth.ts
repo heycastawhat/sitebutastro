@@ -16,11 +16,11 @@ function HackClub(): OAuthConfig<any> {
     clientId: process.env.AUTH_HACKCLUB_ID,
     clientSecret: process.env.AUTH_HACKCLUB_SECRET,
     profile(profile) {
+      const user = profile.identity ?? profile;
       return {
-        id: profile.id ?? profile.sub,
-        name: profile.name ?? "Hack Clubber",
-        email: profile.email,
-        image: profile.avatar,
+        id: user.id,
+        name: [user.first_name, user.last_name].filter(Boolean).join(" ") || "Hack Clubber",
+        email: user.primary_email ?? user.email,
       };
     },
   };
