@@ -40,7 +40,7 @@ export default function GuestbookApp() {
           {isAuthenticated && (
             <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ fontSize: "0.65rem", opacity: 0.9 }}>
-                {viewer?.name} ({viewer?.provider})
+                G'day {viewer?.name}, you're signed in with {viewer?.provider}
               </span>
               <button
                 onClick={() => signOut()}
