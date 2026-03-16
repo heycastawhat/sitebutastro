@@ -11,7 +11,7 @@ function HackClub(): OIDCConfig<any> {
     clientId: process.env.AUTH_HACKCLUB_ID,
     clientSecret: process.env.AUTH_HACKCLUB_SECRET,
     authorization: {
-      params: { scope: "openid email" },
+      params: { scope: "openid email name" },
     },
     profile(profile) {
       return {
