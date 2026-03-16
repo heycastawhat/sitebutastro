@@ -9,6 +9,8 @@ export default function GuestbookApp() {
   const viewer = useQuery(api.messages.viewer);
   const messages = useQuery(api.messages.list);
   const sendMessage = useMutation(api.messages.send);
+  const isAdmin = useQuery(api.messages.checkAdmin);
+  const removeMessage = useMutation(api.messages.remove);
 
   const [body, setBody] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,7 +76,7 @@ export default function GuestbookApp() {
               />
               {submitted && (
                 <p style={{ color: "#008000", fontWeight: "bold", margin: 0 }}>
-                  Message sent! It will appear once approved.
+                  Message sent!
                 </p>
               )}
               <button
@@ -146,8 +148,25 @@ export default function GuestbookApp() {
         ) : (
           messages.map((msg) => (
             <div key={msg._id} className="message win98-window" style={{ display: "flex", flexDirection: "column", backgroundColor: "#c0c0c0", border: "2px solid", borderColor: "#dfdfdf #808080 #808080 #dfdfdf", boxShadow: "inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000" }}>
-              <div className="win98-titlebar" style={{ background: "linear-gradient(90deg, #000080 0%, #1084d7 100%)", color: "white", padding: "4px 6px", fontWeight: "bold", fontFamily: '"ABeeZee", sans-serif', fontSize: "0.9rem" }}>
-                <strong>{msg.author || "Anonymous"}</strong> - <span>{new Date(msg._creationTime).toLocaleDateString()}</span>
+              <div className="win98-titlebar" style={{ background: "linear-gradient(90deg, #000080 0%, #1084d7 100%)", color: "white", padding: "4px 6px", fontWeight: "bold", fontFamily: '"ABeeZee", sans-serif', fontSize: "0.9rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span><strong>{msg.author || "Anonymous"}</strong> - <span>{new Date(msg._creationTime).toLocaleDateString()}</span></span>
+                {isAdmin && (
+                  <button
+                    onClick={() => removeMessage({ messageId: msg._id })}
+                    title="Delete message"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#ff6b6b",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                      fontSize: "0.85rem",
+                      padding: "0 4px",
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
               <div className="message-body" style={{ padding: "1rem", backgroundColor: "#fff", color: "#000", margin: "2px", border: "2px solid", borderColor: "#808080 #dfdfdf #dfdfdf #808080", boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff", fontFamily: '"ABeeZee", sans-serif', whiteSpace: "pre-wrap" }}>
                 {msg.body}

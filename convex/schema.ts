@@ -8,6 +8,5 @@ export default defineSchema({
     userId: v.optional(v.id("users")),
     author: v.optional(v.string()),
     body: v.string(),
-    approved: v.optional(v.boolean()),
   }),
 });
