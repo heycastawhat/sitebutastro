@@ -6,6 +6,7 @@ import { api } from "../../convex/_generated/api";
 export default function GuestbookApp() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { signIn, signOut } = useAuthActions();
+  const viewer = useQuery(api.messages.viewer);
   const messages = useQuery(api.messages.list);
   const sendMessage = useMutation(api.messages.send);
 
@@ -37,12 +38,17 @@ export default function GuestbookApp() {
         <div className="win98-titlebar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Sign the Guestbook</h2>
           {isAuthenticated && (
-            <button
-              onClick={() => signOut()}
-              style={{ fontSize: "0.7rem", padding: "2px 4px", cursor: "pointer" }}
-            >
-              Sign Out
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span style={{ fontSize: "0.65rem", opacity: 0.9 }}>
+                {viewer?.name} ({viewer?.provider})
+              </span>
+              <button
+                onClick={() => signOut()}
+                style={{ fontSize: "0.7rem", padding: "2px 4px", cursor: "pointer" }}
+              >
+                Sign Out
+              </button>
+            </div>
           )}
         </div>
         <div className="form-content" style={{ padding: "1rem", backgroundColor: "#c0c0c0", color: "#000" }}>

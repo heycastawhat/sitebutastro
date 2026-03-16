@@ -20,6 +20,24 @@ async function isAdmin(ctx: any) {
   return accounts.length > 0;
 }
 
+export const viewer = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return null;
+    const user = await ctx.db.get(userId);
+    if (!user) return null;
+    const account = await ctx.db
+      .query("authAccounts")
+      .filter((q: any) => q.eq(q.field("userId"), userId))
+      .first();
+    return {
+      name: user.name ?? "Anonymous",
+      provider: account?.provider ?? "unknown",
+    };
+  },
+});
+
 export const list = query({
   args: {},
   handler: async (ctx) => {
