@@ -1,0 +1,153 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Tools — Site V4"
+    footerType="default"
+    footerComment="tools of the 'trade'"
+>
+    <div class="tools-container">
+        <h1>My Tools</h1>
+
+        <section class="tools-section">
+            <h2 class="section-title">Hardware</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3 class="tool-name">M4 MacBook Pro</h3>
+                    <p class="tool-description">It's a laptop.</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">iPhone 13 Pro</h3>
+                    <p class="tool-description">It does everything I need it to do and it overheats while it's at it.</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">M3 iPad Air + Apple pencil pro</h3>
+                    <p class="tool-description">It replaced my wacom</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Synology RS818+ 40tb</h3>
+                    <p class="tool-description">It's my NAS. Just a bit of storage.</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Apple watch series 4</h3>
+                    <p class="tool-description">It somehow still works!</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">CMF Headphone Pro + Buds Pro 2</h3>
+                    <p class="tool-description">Probably not paid by CMF.</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">MX Master 3s</h3>
+                    <p class="tool-description">It's my mouse.</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Raspberry Pi 4 2GB ram</h3>
+                    <p class="tool-description">Home assistant</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="tools-section">
+            <h2 class="section-title">Software</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <h3 class="tool-name">Zed</h3>
+                    <p class="tool-description">It's a code editor</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Apple Music</h3>
+                    <p class="tool-description">Music</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Claude</h3>
+                    <p class="tool-description">The only half decent one</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Helium</h3>
+                    <p class="tool-description">Browser for browsing</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Procreate</h3>
+                    <p class="tool-description">Drawing app for drawing</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Convex</h3>
+                    <p class="tool-description">Everyone loves convex. cc ingo.au</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Github Desktop</h3>
+                    <p class="tool-description">Git is hard okay</p>
+                </div>
+                <div class="tool-card">
+                    <h3 class="tool-name">Onenote</h3>
+                    <p class="tool-description">I use it for school. It's free and good enough. Great for iPad.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</Layout>
+
+<style>
+    .tools-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    h1 {
+        color: var(--ctp-text);
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .tool-card {
+        background: var(--ctp-surface0);
+        border: 1px solid var(--ctp-surface1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .tool-card:hover {
+        border-color: var(--ctp-mauve);
+        transform: translateY(-2px);
+    }
+
+    .tools-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+        color: var(--ctp-mauve);
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--ctp-surface1);
+        padding-bottom: 0.5rem;
+    }
+
+    .tool-name {
+        color: var(--ctp-text);
+        margin: 0.5rem 0;
+        font-size: 1.25rem;
+    }
+
+    .tool-description {
+        color: var(--ctp-subtext0);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>

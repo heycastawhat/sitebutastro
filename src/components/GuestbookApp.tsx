@@ -92,23 +92,41 @@ export default function GuestbookApp() {
             </form>
           ) : (
             <div style={{ textAlign: "center", padding: "1rem" }}>
-              <p style={{ marginBottom: "1rem" }}>You need to sign in with GitHub to leave a message!</p>
-              <button
-                onClick={() => signIn("github", { redirectTo: window.location.href })}
-                style={{
-                  backgroundColor: "#c0c0c0",
-                  border: "2px solid",
-                  borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
-                  boxShadow: "inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000",
-                  padding: "0.5rem 1rem",
-                  cursor: "pointer",
-                  fontWeight: "bold",
-                  fontFamily: '"ABeeZee", sans-serif',
-                  color: "black"
-                }}
-              >
-                Sign in with GitHub
-              </button>
+              <p style={{ marginBottom: "1rem" }}>Sign in to leave a message!</p>
+              <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", flexWrap: "wrap" }}>
+                <button
+                  onClick={() => signIn("github", { redirectTo: window.location.href })}
+                  style={{
+                    backgroundColor: "#c0c0c0",
+                    border: "2px solid",
+                    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+                    boxShadow: "inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000",
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    fontFamily: '"ABeeZee", sans-serif',
+                    color: "black"
+                  }}
+                >
+                  Sign in with GitHub
+                </button>
+                <button
+                  onClick={() => signIn("hackclub", { redirectTo: window.location.href })}
+                  style={{
+                    backgroundColor: "#c0c0c0",
+                    border: "2px solid",
+                    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+                    boxShadow: "inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000",
+                    padding: "0.5rem 1rem",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    fontFamily: '"ABeeZee", sans-serif',
+                    color: "black"
+                  }}
+                >
+                  Sign in with Hack Club
+                </button>
+              </div>
             </div>
           )}
         </div>
