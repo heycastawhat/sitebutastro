@@ -166,26 +166,47 @@ const externalButtons = [
                         {
                             externalButtons.map((button) => (
                                 <div class="button-item">
-                                    <a
-                                        href={button.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        {typeof button.imgSrc === "string" &&
+                                    {button.url !== "#" ? (
+                                        <a
+                                            href={button.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            {typeof button.imgSrc === "string" &&
+                                            button.imgSrc.startsWith("http") ? (
+                                                <img
+                                                    src={button.imgSrc}
+                                                    alt={button.alt}
+                                                    width="88"
+                                                    height="31"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <Image
+                                                    src={button.imgSrc}
+                                                    alt={button.alt}
+                                                    loading="lazy"
+                                                />
+                                            )}
+                                        </a>
+                                    ) : (
+                                        typeof button.imgSrc === "string" &&
                                         button.imgSrc.startsWith("http") ? (
                                             <img
                                                 src={button.imgSrc}
                                                 alt={button.alt}
                                                 width="88"
                                                 height="31"
+                                                loading="lazy"
                                             />
                                         ) : (
                                             <Image
                                                 src={button.imgSrc}
                                                 alt={button.alt}
+                                                loading="lazy"
                                             />
-                                        )}
-                                    </a>
+                                        )
+                                    )}
                                 </div>
                             ))
                         }
@@ -411,17 +432,18 @@ const externalButtons = [
         }
 
         .hero-image {
-            width: 120px;
-            height: 120px;
+            display: none;
         }
 
         .win98-content {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 0.25rem;
+            padding: 2px;
         }
 
         .button-item img {
-            width: 120px;
-            height: 120px;
+            width: 88px;
+            height: auto;
         }
     }
 </style>
