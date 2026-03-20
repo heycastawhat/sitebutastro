@@ -1,12 +1,13 @@
-## So yeah, im making a site in astro
+## So yeah, I made a site in astro
 ---
-With things
+This is version 4, yes 4 of my personal site, this time in astro.
 ---
-
-so far its got
+# Its got
 - Guest book with convex database 
 - a good number of 88by31s and webrings
 - sign in with hack club and github sign in support
-and more!
+- Blog!
+- Lastfm stats page
+- A mix of catppuccin and retro styling
 ---
 first site that works on mobile! 
