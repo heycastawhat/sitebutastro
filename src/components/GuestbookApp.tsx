@@ -108,6 +108,8 @@ export default function GuestbookApp() {
   const removeMessage = useMutation(api.messages.remove);
 
   const [body, setBody] = useState("");
+  const [siteUrl, setSiteUrl] = useState("");
+  const [buttonUrl, setButtonUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [dialog, setDialog] = useState<{ title: string; message: string; icon: string } | null>(null);
@@ -132,14 +134,23 @@ export default function GuestbookApp() {
 
     setIsSubmitting(true);
     try {
-      await sendMessage({ body });
+      await sendMessage({
+        body,
+        siteUrl: siteUrl.trim() || undefined,
+        buttonUrl: buttonUrl.trim() || undefined,
+      });
       setBody("");
+      setSiteUrl("");
+      setButtonUrl("");
       setSubmitted(true);
       setDialog({
         title: "Message Sent!",
         message: "Your message has been added to the guestbook. Thanks for signing!",
         icon: "✉️",
       });
+      if ((window as any).__unlockAchievement) {
+        (window as any).__unlockAchievement("i_signed");
+      }
       setTimeout(() => setSubmitted(false), 4000);
     } catch (err) {
       console.error(err);
@@ -195,6 +206,38 @@ export default function GuestbookApp() {
                   color: "black",
                   fontFamily: '"ABeeZee", sans-serif',
                   boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff"
+                }}
+              />
+              <input
+                type="url"
+                value={siteUrl}
+                onChange={(e) => setSiteUrl(e.target.value)}
+                placeholder="Your site URL (optional)"
+                style={{
+                  padding: "0.4rem",
+                  border: "2px solid",
+                  borderColor: "#808080 #dfdfdf #dfdfdf #808080",
+                  backgroundColor: "white",
+                  color: "black",
+                  fontFamily: '"ABeeZee", sans-serif',
+                  boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff",
+                  fontSize: "0.85rem",
+                }}
+              />
+              <input
+                type="url"
+                value={buttonUrl}
+                onChange={(e) => setButtonUrl(e.target.value)}
+                placeholder="Your 88x31 button URL (optional)"
+                style={{
+                  padding: "0.4rem",
+                  border: "2px solid",
+                  borderColor: "#808080 #dfdfdf #dfdfdf #808080",
+                  backgroundColor: "white",
+                  color: "black",
+                  fontFamily: '"ABeeZee", sans-serif',
+                  boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff",
+                  fontSize: "0.85rem",
                 }}
               />
               {submitted && (
@@ -293,6 +336,45 @@ export default function GuestbookApp() {
               </div>
               <div className="message-body" style={{ padding: "1rem", backgroundColor: "#fff", color: "#000", margin: "2px", border: "2px solid", borderColor: "#808080 #dfdfdf #dfdfdf #808080", boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff", fontFamily: '"ABeeZee", sans-serif', whiteSpace: "pre-wrap" }}>
                 {msg.body}
+                {(msg.siteUrl || msg.buttonUrl) && (
+                  <div style={{ marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid #ccc", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    {msg.siteUrl && (
+                      <a
+                        href={msg.siteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#000080", fontSize: "0.85rem", textDecoration: "underline" }}
+                      >
+                        {msg.buttonUrl ? "" : msg.siteUrl}
+                      </a>
+                    )}
+                    {msg.buttonUrl && (
+                      <a
+                        href={msg.siteUrl || "#"}
+                        target={msg.siteUrl ? "_blank" : undefined}
+                        rel="noopener noreferrer"
+                      >
+                        <img
+                          src={msg.buttonUrl}
+                          alt="88x31 button"
+                          width="88"
+                          height="31"
+                          style={{ imageRendering: "pixelated" }}
+                        />
+                      </a>
+                    )}
+                    {msg.siteUrl && msg.buttonUrl && (
+                      <a
+                        href={msg.siteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#000080", fontSize: "0.85rem", textDecoration: "underline" }}
+                      >
+                        {msg.siteUrl}
+                      </a>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))

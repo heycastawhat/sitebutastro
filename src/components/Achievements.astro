@@ -1,0 +1,326 @@
+<div id="achievement-toast" class="achievement-toast hidden">
+    <div class="achievement-window">
+        <div class="achievement-titlebar">
+            <span>Achievement Unlocked!</span>
+            <button class="achievement-close" onclick="document.getElementById('achievement-toast').classList.add('hidden')">✕</button>
+        </div>
+        <div class="achievement-body">
+            <div>
+                <p class="achievement-name" id="achievement-name"></p>
+                <p class="achievement-desc" id="achievement-desc"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .achievement-toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9998;
+        animation: achieveSlideIn 0.4s ease;
+    }
+
+    .achievement-toast.hidden {
+        display: none;
+    }
+
+    @keyframes achieveSlideIn {
+        from {
+            transform: translateX(120%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    .achievement-window {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #000, 4px 4px 0 rgba(0,0,0,0.3);
+        min-width: 280px;
+        max-width: 350px;
+        font-family: "ABeeZee", sans-serif;
+    }
+
+    .achievement-titlebar {
+        background: linear-gradient(90deg, #000080 0%, #1084d7 100%);
+        color: white;
+        padding: 4px 6px;
+        font-weight: bold;
+        font-size: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .achievement-close {
+        background: #c0c0c0;
+        border: 2px solid;
+        border-color: #dfdfdf #808080 #808080 #dfdfdf;
+        padding: 0 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.65rem;
+        line-height: 1;
+        color: #000;
+    }
+
+    .achievement-body {
+        padding: 0.75rem 1rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        color: #000;
+    }
+
+    .achievement-name {
+        margin: 0;
+        font-weight: bold;
+        font-size: 0.95rem;
+    }
+
+    .achievement-desc {
+        margin: 0.2rem 0 0;
+        font-size: 0.8rem;
+        color: #444;
+    }
+
+    @media (max-width: 768px) {
+        .achievement-toast {
+            bottom: 12px;
+            right: 12px;
+            left: 12px;
+        }
+
+        .achievement-window {
+            min-width: auto;
+            max-width: none;
+        }
+    }
+</style>
+
+<script>
+    const ACHIEVEMENTS = {
+        welcome_home: {
+            name: "Welcome Home",
+            desc: "Visited the homepage",
+        },
+        i_signed: {
+            name: "I Signed",
+            desc: "Signed the guestbook",
+        },
+        bookworm: {
+            name: "Bookworm",
+            desc: "Read 3 blog posts",
+        },
+        frequent_flyer: {
+            name: "Frequent Flyer",
+            desc: "Visited the site 3 times",
+        },
+        explorer: {
+            name: "Explorer",
+            desc: "Visited every page",
+        },
+        egg_hunter: {
+            name: "Easter Egg Hunter",
+            desc: "Clicked every footer easter egg link",
+        },
+        lost: {
+            name: "Lost",
+            desc: "Found the 404 page",
+        },
+        first_timer: {
+            name: "First Timer",
+            desc: "Visited the site for the first time",
+        },
+        copy_cat: {
+            name: "Copy Cat",
+            desc: "Copied an 88x31 button embed code",
+        },
+        loyal_visitor: {
+            name: "Loyal Visitor",
+            desc: "Visited on 3 different days",
+        },
+        completionist: {
+            name: "Completionist",
+            desc: "Unlocked every other achievement",
+        },
+    };
+
+    type AchievementId = keyof typeof ACHIEVEMENTS;
+
+    const STORAGE_KEY = "site_achievements";
+    const VISITS_KEY = "site_visit_count";
+    const PAGES_KEY = "site_pages_visited";
+    const BLOGS_KEY = "site_blogs_read";
+    const EGGS_KEY = "site_eggs_clicked";
+    const DAYS_KEY = "site_days_visited";
+
+    const ALL_PAGES = ["/", "/Contact", "/Stats", "/blog", "/Tools", "/webring", "/guestbook"];
+    const ALL_EGGS = ["/Stats", "/Tools", "/guestbook"];
+
+    function getUnlocked(): Set<string> {
+        try {
+            return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+        } catch (e) {
+            return new Set();
+        }
+    }
+
+    function getSet(key: string): Set<string> {
+        try {
+            return new Set(JSON.parse(localStorage.getItem(key) || "[]"));
+        } catch (e) {
+            return new Set();
+        }
+    }
+
+    function saveSet(key: string, s: Set<string>) {
+        localStorage.setItem(key, JSON.stringify([...s]));
+    }
+
+    let toastQueue: AchievementId[] = [];
+    let toastActive = false;
+
+    function showToast(id: AchievementId) {
+        toastQueue.push(id);
+        if (!toastActive) processQueue();
+    }
+
+    function processQueue() {
+        if (toastQueue.length === 0) {
+            toastActive = false;
+            return;
+        }
+        toastActive = true;
+        const id = toastQueue.shift()!;
+        const a = ACHIEVEMENTS[id];
+        const toast = document.getElementById("achievement-toast")!;
+        document.getElementById("achievement-name")!.textContent = a.name;
+        document.getElementById("achievement-desc")!.textContent = a.desc;
+        toast.classList.remove("hidden");
+        toast.style.animation = "none";
+        toast.offsetHeight; // reflow
+        toast.style.animation = "achieveSlideIn 0.4s ease";
+        setTimeout(() => {
+            toast.classList.add("hidden");
+            setTimeout(processQueue, 300);
+        }, 4000);
+    }
+
+    function unlock(id: AchievementId) {
+        const unlocked = getUnlocked();
+        if (unlocked.has(id)) return;
+        unlocked.add(id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
+        showToast(id);
+    }
+
+    // --- Track visits ---
+    const visitCount = parseInt(localStorage.getItem(VISITS_KEY) || "0") + 1;
+    localStorage.setItem(VISITS_KEY, String(visitCount));
+
+    // --- Track pages ---
+    const path = window.location.pathname.replace(/\/$/, "") || "/";
+    const pagesVisited = getSet(PAGES_KEY);
+    pagesVisited.add(path);
+    saveSet(PAGES_KEY, pagesVisited);
+
+    // --- Track blog reads ---
+    const blogsRead = getSet(BLOGS_KEY);
+    if (path.startsWith("/blog/") && path !== "/blog") {
+        blogsRead.add(path);
+        saveSet(BLOGS_KEY, blogsRead);
+    }
+
+    // --- Track footer egg clicks ---
+    const eggsClicked = getSet(EGGS_KEY);
+    document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        const link = target.closest("a.footer-text.footer-link") as HTMLAnchorElement | null;
+        if (link) {
+            e.preventDefault();
+            eggsClicked.add(path);
+            saveSet(EGGS_KEY, eggsClicked);
+            checkEggHunter();
+            window.open(link.href, "_blank");
+        }
+    });
+
+    function checkEggHunter() {
+        if (ALL_EGGS.every((p) => eggsClicked.has(p))) {
+            unlock("egg_hunter");
+        }
+    }
+
+    // --- Track days visited ---
+    const daysVisited = getSet(DAYS_KEY);
+    const today = new Date().toISOString().split("T")[0];
+    daysVisited.add(today);
+    saveSet(DAYS_KEY, daysVisited);
+
+    // --- Track copy button clicks ---
+    document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest(".copy-btn")) {
+            unlock("copy_cat");
+        }
+    });
+
+    // --- Check achievements ---
+    // First Timer
+    if (visitCount === 1) {
+        unlock("first_timer");
+    }
+
+    // Welcome Home
+    if (path === "/") {
+        unlock("welcome_home");
+    }
+
+    // Lost (404)
+    if (document.title.includes("404")) {
+        unlock("lost");
+    }
+
+    // Frequent Flyer
+    if (visitCount >= 3) {
+        unlock("frequent_flyer");
+    }
+
+    // Bookworm
+    if (blogsRead.size >= 3) {
+        unlock("bookworm");
+    }
+
+    // Explorer
+    if (ALL_PAGES.every((p) => pagesVisited.has(p))) {
+        unlock("explorer");
+    }
+
+    // Loyal Visitor
+    if (daysVisited.size >= 3) {
+        unlock("loyal_visitor");
+    }
+
+    // Egg hunter (check on load too)
+    checkEggHunter();
+
+    // Completionist — check if all others are unlocked
+    function checkCompletionist() {
+        const unlocked = getUnlocked();
+        const others = Object.keys(ACHIEVEMENTS).filter((k) => k !== "completionist");
+        if (others.every((k) => unlocked.has(k))) {
+            unlock("completionist");
+        }
+    }
+    checkCompletionist();
+
+    // I Signed — exposed globally for guestbook to call
+    (window as any).__unlockAchievement = unlock;
+</script>

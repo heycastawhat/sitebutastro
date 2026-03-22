@@ -9,5 +9,7 @@ export default defineSchema({
     author: v.optional(v.string()),
     body: v.string(),
     approved: v.optional(v.boolean()),
+    siteUrl: v.optional(v.string()),
+    buttonUrl: v.optional(v.string()),
   }),
 });

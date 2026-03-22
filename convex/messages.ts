@@ -56,13 +56,20 @@ export const list = query({
 });
 
 export const send = mutation({
-  args: { body: v.string(), author: v.optional(v.string()) },
-  handler: async (ctx, { body, author }) => {
+  args: {
+    body: v.string(),
+    author: v.optional(v.string()),
+    siteUrl: v.optional(v.string()),
+    buttonUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, { body, author, siteUrl, buttonUrl }) => {
     const userId = await getAuthUserId(ctx);
     await ctx.db.insert("messages", {
       body,
       author,
       userId: userId ?? undefined,
+      siteUrl: siteUrl || undefined,
+      buttonUrl: buttonUrl || undefined,
     });
   },
 });

@@ -1,0 +1,147 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Achievements — Site V4" footerType="default" footerComment="gotta catch 'em all">
+    <div class="achievements-container">
+        <h1>Achievements</h1>
+        <p class="subtitle">
+            <span id="unlock-count">0</span> / <span id="total-count">0</span> unlocked
+        </p>
+
+        <div class="achievements-grid" id="achievements-grid"></div>
+    </div>
+</Layout>
+
+<style>
+    .achievements-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    h1 {
+        color: var(--ctp-text);
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        color: var(--ctp-overlay1);
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+
+    .achievements-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    const ACHIEVEMENTS: Record<string, { name: string; desc: string }> = {
+        welcome_home: {
+            name: "Welcome Home",
+            desc: "Visited the homepage",
+        },
+        i_signed: {
+            name: "I Signed",
+            desc: "Signed the guestbook",
+        },
+        bookworm: {
+            name: "Bookworm",
+            desc: "Read 3 blog posts",
+        },
+        frequent_flyer: {
+            name: "Frequent Flyer",
+            desc: "Visited the site 3 times",
+        },
+        explorer: {
+            name: "Explorer",
+            desc: "Visited every page",
+        },
+        egg_hunter: {
+            name: "Easter Egg Hunter",
+            desc: "Clicked every footer easter egg link",
+        },
+        lost: {
+            name: "Lost",
+            desc: "Found the 404 page",
+        },
+        first_timer: {
+            name: "First Timer",
+            desc: "Visited the site for the first time",
+        },
+        copy_cat: {
+            name: "Copy Cat",
+            desc: "Copied an 88x31 button embed code",
+        },
+        loyal_visitor: {
+            name: "Loyal Visitor",
+            desc: "Visited on 3 different days",
+        },
+        completionist: {
+            name: "Completionist",
+            desc: "Unlocked every other achievement",
+        },
+    };
+
+    const STORAGE_KEY = "site_achievements";
+
+    function getUnlocked(): Set<string> {
+        try {
+            return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+        } catch (e) {
+            return new Set();
+        }
+    }
+
+    const unlocked = getUnlocked();
+    const grid = document.getElementById("achievements-grid")!;
+    const entries = Object.entries(ACHIEVEMENTS);
+
+    document.getElementById("unlock-count")!.textContent = String(
+        entries.filter(([id]) => unlocked.has(id)).length
+    );
+    document.getElementById("total-count")!.textContent = String(entries.length);
+
+    entries.forEach(([id, achievement]) => {
+        const isUnlocked = unlocked.has(id);
+        const card = document.createElement("div");
+        card.style.cssText = `
+            background: ${isUnlocked ? "#c0c0c0" : "var(--ctp-surface0)"};
+            border: 2px solid;
+            border-color: ${isUnlocked ? "#dfdfdf #808080 #808080 #dfdfdf" : "var(--ctp-surface1) var(--ctp-surface1) var(--ctp-surface1) var(--ctp-surface1)"};
+            ${isUnlocked ? "box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #000;" : "opacity: 0.5;"}
+            padding: 1rem 1.25rem;
+            font-family: "ABeeZee", sans-serif;
+        `;
+
+        const name = document.createElement("h3");
+        name.textContent = isUnlocked ? achievement.name : "???";
+        name.style.cssText = `
+            margin: 0 0 0.25rem;
+            font-size: 1.1rem;
+            color: ${isUnlocked ? "#000080" : "var(--ctp-overlay1)"};
+        `;
+
+        const desc = document.createElement("p");
+        desc.textContent = isUnlocked ? achievement.desc : "Locked";
+        desc.style.cssText = `
+            margin: 0;
+            font-size: 0.85rem;
+            color: ${isUnlocked ? "#444" : "var(--ctp-overlay0)"};
+        `;
+
+        card.appendChild(name);
+        card.appendChild(desc);
+        grid.appendChild(card);
+    });
+</script>
