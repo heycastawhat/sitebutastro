@@ -98,6 +98,16 @@ function Win95Dialog({ title, message, icon, onClose }: {
   );
 }
 
+function isSafeUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export default function GuestbookApp() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { signIn, signOut } = useAuthActions();
@@ -197,6 +207,7 @@ export default function GuestbookApp() {
                 onChange={(e) => setBody(e.target.value)}
                 placeholder="Write a nice message..."
                 required
+                maxLength={1000}
                 rows={3}
                 style={{
                   padding: "0.5rem",
@@ -336,26 +347,26 @@ export default function GuestbookApp() {
               </div>
               <div className="message-body" style={{ padding: "1rem", backgroundColor: "#fff", color: "#000", margin: "2px", border: "2px solid", borderColor: "#808080 #dfdfdf #dfdfdf #808080", boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff", fontFamily: '"ABeeZee", sans-serif', whiteSpace: "pre-wrap" }}>
                 {msg.body}
-                {(msg.siteUrl || msg.buttonUrl) && (
+                {(isSafeUrl(msg.siteUrl) || isSafeUrl(msg.buttonUrl)) && (
                   <div style={{ marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid #ccc", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    {msg.siteUrl && (
+                    {isSafeUrl(msg.siteUrl) && !isSafeUrl(msg.buttonUrl) && (
                       <a
                         href={msg.siteUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ color: "#000080", fontSize: "0.85rem", textDecoration: "underline" }}
                       >
-                        {msg.buttonUrl ? "" : msg.siteUrl}
+                        {msg.siteUrl}
                       </a>
                     )}
-                    {msg.buttonUrl && (
+                    {isSafeUrl(msg.buttonUrl) && (
                       <a
-                        href={msg.siteUrl || "#"}
-                        target={msg.siteUrl ? "_blank" : undefined}
+                        href={isSafeUrl(msg.siteUrl) ? msg.siteUrl! : "#"}
+                        target={isSafeUrl(msg.siteUrl) ? "_blank" : undefined}
                         rel="noopener noreferrer"
                       >
                         <img
-                          src={msg.buttonUrl}
+                          src={msg.buttonUrl!}
                           alt="88x31 button"
                           width="88"
                           height="31"
@@ -363,7 +374,7 @@ export default function GuestbookApp() {
                         />
                       </a>
                     )}
-                    {msg.siteUrl && msg.buttonUrl && (
+                    {isSafeUrl(msg.siteUrl) && isSafeUrl(msg.buttonUrl) && (
                       <a
                         href={msg.siteUrl}
                         target="_blank"

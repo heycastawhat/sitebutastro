@@ -55,6 +55,21 @@ export const list = query({
   },
 });
 
+function sanitizeUrl(url: string | undefined): string | undefined {
+  if (!url) return undefined;
+  const trimmed = url.trim();
+  if (!trimmed) return undefined;
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      throw new Error("Invalid URL protocol");
+    }
+    return parsed.href;
+  } catch {
+    throw new Error("Invalid URL: must be a valid http or https URL");
+  }
+}
+
 export const send = mutation({
   args: {
     body: v.string(),
@@ -64,12 +79,15 @@ export const send = mutation({
   },
   handler: async (ctx, { body, author, siteUrl, buttonUrl }) => {
     const userId = await getAuthUserId(ctx);
+    if (body.length > 1000) throw new Error("Message too long (max 1000 chars)");
+    const cleanSiteUrl = sanitizeUrl(siteUrl);
+    const cleanButtonUrl = sanitizeUrl(buttonUrl);
     await ctx.db.insert("messages", {
       body,
       author,
       userId: userId ?? undefined,
-      siteUrl: siteUrl || undefined,
-      buttonUrl: buttonUrl || undefined,
+      siteUrl: cleanSiteUrl,
+      buttonUrl: cleanButtonUrl,
     });
   },
 });
