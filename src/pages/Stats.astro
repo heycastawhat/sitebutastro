@@ -2,7 +2,9 @@
 import Layout from "../layouts/Layout.astro";
 
 const apiKey = import.meta.env.LASTFM_API_KEY;
+const githubToken = import.meta.env.GITHUB_TOKEN;
 const username = "castawhat";
+const githubUsername = "heycastawhat";
 
 interface TrackImage {
     size: string;
@@ -42,6 +44,116 @@ try {
 } catch (e) {
     error = "Failed to fetch Last.fm data";
     console.error(error, e);
+}
+
+interface GitHubCommit {
+    sha: string;
+    commit: {
+        message: string;
+        author: {
+            date: string;
+        };
+    };
+    html_url: string;
+}
+
+interface GitHubRepo {
+    name: string;
+    html_url: string;
+    full_name: string;
+}
+
+interface RepoCommitCount {
+    name: string;
+    url: string;
+    commits: number;
+}
+
+let lastCommit: { repo: string; message: string; date: string; url: string } | null = null;
+let topRepos: RepoCommitCount[] = [];
+let githubError: string | null = null;
+
+const ghHeaders: Record<string, string> = {
+    Accept: "application/vnd.github+json",
+};
+if (githubToken) {
+    ghHeaders.Authorization = `Bearer ${githubToken}`;
+}
+
+try {
+    // Fetch most recently pushed repos
+    const reposRes = await fetch(
+        `https://api.github.com/users/${githubUsername}/repos?per_page=20&sort=pushed`,
+        { headers: ghHeaders },
+    );
+    const repos: GitHubRepo[] = await reposRes.json();
+
+    // Find the latest commit by the user across recent repos
+    const latestCommits = await Promise.all(
+        repos.slice(0, 10).map(async (repo) => {
+            try {
+                const res = await fetch(
+                    `https://api.github.com/repos/${githubUsername}/${repo.name}/commits?author=${githubUsername}&per_page=1`,
+                    { headers: ghHeaders },
+                );
+                const data: GitHubCommit[] = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    return { repo: repo.name, commit: data[0] };
+                }
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }),
+    );
+
+    const mostRecent = latestCommits
+        .filter((c): c is { repo: string; commit: GitHubCommit } => c !== null)
+        .sort((a, b) => new Date(b.commit.commit.author.date).getTime() - new Date(a.commit.commit.author.date).getTime())[0];
+
+    if (mostRecent) {
+        lastCommit = {
+            repo: mostRecent.repo,
+            message: mostRecent.commit.commit.message.split("\n")[0],
+            date: new Date(mostRecent.commit.commit.author.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+            }),
+            url: mostRecent.commit.html_url,
+        };
+    }
+
+    // Count recent commits per repo
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+    const sinceISO = since.toISOString();
+
+    const commitCounts = await Promise.all(
+        repos.map(async (repo) => {
+            try {
+                const res = await fetch(
+                    `https://api.github.com/repos/${githubUsername}/${repo.name}/commits?author=${githubUsername}&since=${sinceISO}&per_page=100`,
+                    { headers: ghHeaders },
+                );
+                const data = await res.json();
+                const count = Array.isArray(data) ? data.length : 0;
+                return { name: repo.name, url: repo.html_url, commits: count };
+            } catch (e) {
+                return { name: repo.name, url: repo.html_url, commits: 0 };
+            }
+        }),
+    );
+
+    topRepos = commitCounts
+        .filter((r) => r.commits > 0)
+        .sort((a, b) => b.commits - a.commits)
+        .slice(0, 5);
+} catch (e) {
+    githubError = "Failed to fetch GitHub data";
+    console.error(githubError, e);
 }
 ---
 
@@ -99,6 +211,47 @@ try {
                 })
             }
         </div>
+
+        <h1>GitHub Activity</h1>
+
+        {githubError && <p class="error">{githubError}</p>}
+
+        {lastCommit && (
+            <div class="github-section">
+                <h2>Last Commit</h2>
+                <div class="track-card">
+                    <div class="track-info">
+                        <h3 class="track-name">
+                            <a href={lastCommit.url} target="_blank" rel="noopener noreferrer">
+                                {lastCommit.message}
+                            </a>
+                        </h3>
+                        <p class="artist-name">{lastCommit.repo}</p>
+                        <p class="play-date">{lastCommit.date}</p>
+                    </div>
+                </div>
+            </div>
+        )}
+
+        {topRepos.length > 0 && (
+            <div class="github-section">
+                <h2>Most Active Repos <span class="subtitle">(last 90 days)</span></h2>
+                <div class="tracks-grid">
+                    {topRepos.map((repo) => (
+                        <div class="track-card">
+                            <div class="track-info">
+                                <h3 class="track-name">
+                                    <a href={repo.url} target="_blank" rel="noopener noreferrer">
+                                        {repo.name}
+                                    </a>
+                                </h3>
+                                <p class="artist-name">{repo.commits} commits</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
     </div>
 </Layout>
 
@@ -197,6 +350,31 @@ try {
         font-weight: 600;
         margin-top: 0.5rem;
         width: fit-content;
+    }
+
+    .github-section {
+        margin-bottom: 2rem;
+    }
+
+    .github-section h2 {
+        color: var(--ctp-text);
+        font-size: 1.3rem;
+        margin: 0 0 1rem;
+    }
+
+    .subtitle {
+        color: var(--ctp-overlay1);
+        font-size: 0.85rem;
+        font-weight: normal;
+    }
+
+    .track-card a {
+        color: var(--ctp-blue);
+        text-decoration: none;
+    }
+
+    .track-card a:hover {
+        text-decoration: underline;
     }
 
     @media (max-width: 768px) {

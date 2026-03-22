@@ -1,5 +1,5 @@
 ---
-
+const currentPath = Astro.url.pathname;
 ---
 
 <nav class="navbar">
@@ -10,25 +10,25 @@
         </button>
         <ul class="nav-menu">
             <li class="nav-item">
-                <a href="/" class="nav-link">Home</a>
+                <a href="/" class={`nav-link ${currentPath === "/" ? "active" : ""}`}>Home</a>
             </li>
             <li class="nav-item">
-                <a href="/Contact" class="nav-link">Contact</a>
+                <a href="/Contact" class={`nav-link ${currentPath.startsWith("/Contact") ? "active" : ""}`}>Contact</a>
             </li>
             <li class="nav-item">
-                <a href="/Stats" class="nav-link">Stats</a>
+                <a href="/Stats" class={`nav-link ${currentPath.startsWith("/Stats") ? "active" : ""}`}>Stats</a>
             </li>
             <li class="nav-item">
-                <a href="/blog" class="nav-link">Blog</a>
+                <a href="/blog" class={`nav-link ${currentPath.startsWith("/blog") ? "active" : ""}`}>Blog</a>
             </li>
             <li class="nav-item">
-                <a href="/Tools" class="nav-link">Tools</a>
+                <a href="/Tools" class={`nav-link ${currentPath.startsWith("/Tools") ? "active" : ""}`}>Tools</a>
             </li>
             <li class="nav-item">
-                <a href="/webring" class="nav-link">Webring</a>
+                <a href="/webring" class={`nav-link ${currentPath.startsWith("/webring") ? "active" : ""}`}>Webring</a>
             </li>
             <li class="nav-item">
-                <a href="/guestbook" class="nav-link">Guestbook</a>
+                <a href="/guestbook" class={`nav-link ${currentPath.startsWith("/guestbook") ? "active" : ""}`}>Guestbook</a>
             </li>
         </ul>
     </div>
@@ -130,14 +130,47 @@
     .nav-link {
         color: var(--ctp-text);
         text-decoration: none;
-        transition: color 0.2s ease, background-color 0.2s ease;
+        transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
         padding: 0.5rem 1rem;
         border-radius: 8px;
+        position: relative;
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--ctp-blue);
+        border-radius: 1px;
+        transition: width 0.25s ease, left 0.25s ease;
+    }
+
+    .nav-link:hover::after {
+        width: 60%;
+        left: 20%;
     }
 
     .nav-link:hover {
         color: var(--ctp-blue);
         background-color: var(--ctp-surface1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link:active {
+        transform: translateY(0px);
+    }
+
+    .nav-link.active {
+        color: var(--ctp-blue);
+        background-color: var(--ctp-surface1);
+    }
+
+    .nav-link.active::after {
+        width: 60%;
+        left: 20%;
     }
 
     @media (max-width: 768px) {

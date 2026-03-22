@@ -1,7 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
+
+const win95Styles: Record<string, React.CSSProperties> = {
+  overlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.4)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+    animation: "win95FadeIn 0.15s ease",
+  },
+  dialog: {
+    background: "#c0c0c0",
+    border: "2px solid",
+    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+    boxShadow: "inset 1px 1px 0 #fff, inset -1px -1px 0 #000, 4px 4px 0 rgba(0,0,0,0.3)",
+    minWidth: 300,
+    maxWidth: 400,
+    fontFamily: '"ABeeZee", sans-serif',
+  },
+  titlebar: {
+    background: "linear-gradient(90deg, #000080 0%, #1084d7 100%)",
+    color: "white",
+    padding: "4px 6px",
+    fontWeight: "bold",
+    fontSize: "0.85rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  closeBtn: {
+    background: "#c0c0c0",
+    border: "2px solid",
+    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+    padding: "0 4px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontSize: "0.7rem",
+    lineHeight: 1,
+    color: "#000",
+  },
+  body: {
+    padding: "1.25rem",
+    display: "flex",
+    gap: "1rem",
+    alignItems: "flex-start",
+    color: "#000",
+  },
+  icon: {
+    fontSize: "2rem",
+    flexShrink: 0,
+  },
+  okBtn: {
+    backgroundColor: "#c0c0c0",
+    border: "2px solid",
+    borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+    boxShadow: "inset 1px 1px 0 #fff, inset -1px -1px 0 #000",
+    padding: "4px 24px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    fontFamily: '"ABeeZee", sans-serif',
+    color: "#000",
+  },
+  footer: {
+    padding: "0 1.25rem 1rem",
+    display: "flex",
+    justifyContent: "center",
+  },
+};
+
+function Win95Dialog({ title, message, icon, onClose }: {
+  title: string;
+  message: string;
+  icon: string;
+  onClose: () => void;
+}) {
+  return (
+    <div style={win95Styles.overlay} onClick={onClose}>
+      <div style={win95Styles.dialog} onClick={(e) => e.stopPropagation()}>
+        <div style={win95Styles.titlebar}>
+          <span>{title}</span>
+          <button style={win95Styles.closeBtn} onClick={onClose}>✕</button>
+        </div>
+        <div style={win95Styles.body}>
+          <span style={win95Styles.icon}>{icon}</span>
+          <p style={{ margin: 0, fontSize: "0.9rem", lineHeight: 1.4 }}>{message}</p>
+        </div>
+        <div style={win95Styles.footer}>
+          <button style={win95Styles.okBtn} onClick={onClose}>OK</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function GuestbookApp() {
   const { isAuthenticated, isLoading } = useConvexAuth();
@@ -15,6 +110,21 @@ export default function GuestbookApp() {
   const [body, setBody] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [dialog, setDialog] = useState<{ title: string; message: string; icon: string } | null>(null);
+  const wasAuthenticated = useRef(false);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && !wasAuthenticated.current && viewer?.name) {
+      setDialog({
+        title: "Welcome!",
+        message: `G'day ${viewer.name}! You've successfully signed in. You can now leave a message in the guestbook.`,
+        icon: "🖥️",
+      });
+    }
+    if (!isLoading) {
+      wasAuthenticated.current = isAuthenticated;
+    }
+  }, [isAuthenticated, isLoading, viewer]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +135,11 @@ export default function GuestbookApp() {
       await sendMessage({ body });
       setBody("");
       setSubmitted(true);
+      setDialog({
+        title: "Message Sent!",
+        message: "Your message has been added to the guestbook. Thanks for signing!",
+        icon: "✉️",
+      });
       setTimeout(() => setSubmitted(false), 4000);
     } catch (err) {
       console.error(err);
@@ -36,6 +151,14 @@ export default function GuestbookApp() {
 
   return (
     <div className="guestbook-container">
+      {dialog && (
+        <Win95Dialog
+          title={dialog.title}
+          message={dialog.message}
+          icon={dialog.icon}
+          onClose={() => setDialog(null)}
+        />
+      )}
       <div className="win98-window message-form-container">
         <div className="win98-titlebar" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <h2>Sign the Guestbook</h2>
