@@ -7,7 +7,9 @@ export default function AdminPanel() {
   const { signIn, signOut } = useAuthActions();
   const isAdmin = useQuery(api.messages.checkAdmin);
   const messages = useQuery(api.messages.list);
+  const pending = useQuery(api.messages.listPending);
   const remove = useMutation(api.messages.remove);
+  const approve = useMutation(api.messages.approve);
 
   if (isLoading) return <p style={{ color: "#cdd6f4" }}>Loading...</p>;
 
@@ -50,19 +52,49 @@ export default function AdminPanel() {
       </div>
 
       {/* Stats */}
-      <div style={{
-        backgroundColor: "#313244",
-        border: "1px solid #45475a",
-        borderRadius: "10px",
-        padding: "1.25rem",
-        textAlign: "center",
-        marginBottom: "2rem",
-      }}>
-        <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#89b4fa" }}>{messages.length}</div>
-        <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Total Messages</div>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "2rem" }}>
+        <div style={{
+          flex: 1,
+          backgroundColor: "#313244",
+          border: "1px solid #45475a",
+          borderRadius: "10px",
+          padding: "1.25rem",
+          textAlign: "center",
+        }}>
+          <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#89b4fa" }}>{messages.length}</div>
+          <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Approved</div>
+        </div>
+        <div style={{
+          flex: 1,
+          backgroundColor: "#313244",
+          border: "1px solid #45475a",
+          borderRadius: "10px",
+          padding: "1.25rem",
+          textAlign: "center",
+        }}>
+          <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#fab387" }}>{pending?.length ?? 0}</div>
+          <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Pending</div>
+        </div>
       </div>
 
-      {/* Message List */}
+      {/* Pending Messages */}
+      {pending && pending.length > 0 && (
+        <>
+          <h2 style={{ color: "#fab387", fontSize: "1.2rem", marginBottom: "1rem" }}>Pending Approval</h2>
+          {pending.map((msg) => (
+            <MessageCard
+              key={msg._id}
+              msg={msg}
+              isPending
+              onApprove={() => approve({ messageId: msg._id })}
+              onDelete={() => remove({ messageId: msg._id })}
+            />
+          ))}
+        </>
+      )}
+
+      {/* Approved Messages */}
+      <h2 style={{ color: "#89b4fa", fontSize: "1.2rem", marginBottom: "1rem", marginTop: "1.5rem" }}>Approved Messages</h2>
       {messages.length > 0 ? (
         messages.map((msg) => (
           <MessageCard
@@ -73,21 +105,23 @@ export default function AdminPanel() {
         ))
       ) : (
         <p style={{ color: "#6c7086", textAlign: "center", padding: "2rem 0" }}>
-          No messages yet.
+          No approved messages yet.
         </p>
       )}
     </div>
   );
 }
 
-function MessageCard({ msg, onDelete }: {
+function MessageCard({ msg, onDelete, onApprove, isPending }: {
   msg: any;
   onDelete: () => void;
+  onApprove?: () => void;
+  isPending?: boolean;
 }) {
   return (
     <div style={{
       backgroundColor: "#313244",
-      border: "1px solid #45475a",
+      border: isPending ? "1px solid #fab387" : "1px solid #45475a",
       borderRadius: "10px",
       padding: "1rem 1.25rem",
       marginBottom: "0.75rem",
@@ -101,10 +135,24 @@ function MessageCard({ msg, onDelete }: {
             </span>
           </div>
           <p style={{ color: "#cdd6f4", margin: "0.5rem 0 0", whiteSpace: "pre-wrap" }}>{msg.body}</p>
+          {(msg.siteUrl || msg.buttonUrl) && (
+            <div style={{ color: "#6c7086", fontSize: "0.8rem", marginTop: "0.5rem" }}>
+              {msg.siteUrl && <span>Site: {msg.siteUrl}</span>}
+              {msg.siteUrl && msg.buttonUrl && <span> · </span>}
+              {msg.buttonUrl && <span>Button: {msg.buttonUrl}</span>}
+            </div>
+          )}
         </div>
-        <button onClick={onDelete} style={{ ...btn, backgroundColor: "#f38ba8", color: "#1e1e2e", marginLeft: "1rem", flexShrink: 0 }}>
-          ✕
-        </button>
+        <div style={{ display: "flex", gap: "0.5rem", marginLeft: "1rem", flexShrink: 0 }}>
+          {isPending && onApprove && (
+            <button onClick={onApprove} style={{ ...btn, backgroundColor: "#a6e3a1", color: "#1e1e2e" }}>
+              ✓
+            </button>
+          )}
+          <button onClick={onDelete} style={{ ...btn, backgroundColor: "#f38ba8", color: "#1e1e2e" }}>
+            ✕
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -155,16 +155,20 @@ export default function GuestbookApp() {
       setSubmitted(true);
       setDialog({
         title: "Message Sent!",
-        message: "Your message has been added to the guestbook. Thanks for signing!",
+        message: "Your message has been submitted and is pending approval. Thanks for signing!",
         icon: "✉️",
       });
       if ((window as any).__unlockAchievement) {
         (window as any).__unlockAchievement("i_signed");
       }
       setTimeout(() => setSubmitted(false), 4000);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to send message.");
+    } catch (err: any) {
+      const message = err?.message || err?.data?.message || "Failed to send message.";
+      setDialog({
+        title: "Error",
+        message,
+        icon: "⚠️",
+      });
     } finally {
       setIsSubmitting(false);
     }

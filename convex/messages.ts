@@ -41,10 +41,13 @@ export const viewer = query({
 export const list = query({
   args: {},
   handler: async (ctx) => {
-    const messages = await ctx.db.query("messages").order("desc").take(50);
+    const messages = await ctx.db.query("messages").order("desc").take(200);
+
+    // Only show approved messages to public
+    const approved = messages.filter((m) => m.approved === true);
 
     return Promise.all(
-      messages.map(async (message) => {
+      approved.slice(0, 50).map(async (message) => {
         if (message.userId) {
           const user = await ctx.db.get(message.userId);
           return { ...message, author: user?.name ?? "Anonymous" };
@@ -52,6 +55,36 @@ export const list = query({
         return message;
       }),
     );
+  },
+});
+
+// Admin-only: list pending (unapproved) messages
+export const listPending = query({
+  args: {},
+  handler: async (ctx) => {
+    const admin = await isAdmin(ctx);
+    if (!admin) return [];
+    const messages = await ctx.db.query("messages").order("desc").take(200);
+    const pending = messages.filter((m) => m.approved !== true);
+    return Promise.all(
+      pending.map(async (message) => {
+        if (message.userId) {
+          const user = await ctx.db.get(message.userId);
+          return { ...message, author: user?.name ?? "Anonymous" };
+        }
+        return message;
+      }),
+    );
+  },
+});
+
+// Admin-only: approve a message
+export const approve = mutation({
+  args: { messageId: v.id("messages") },
+  handler: async (ctx, { messageId }) => {
+    const admin = await isAdmin(ctx);
+    if (!admin) throw new Error("Unauthorized");
+    await ctx.db.patch(messageId, { approved: true });
   },
 });
 
@@ -70,6 +103,8 @@ function sanitizeUrl(url: string | undefined): string | undefined {
   }
 }
 
+const RATE_LIMIT_MS = 60_000; // 1 message per minute
+
 export const send = mutation({
   args: {
     body: v.string(),
@@ -79,15 +114,35 @@ export const send = mutation({
   },
   handler: async (ctx, { body, author, siteUrl, buttonUrl }) => {
     const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Must be signed in to send a message");
     if (body.length > 1000) throw new Error("Message too long (max 1000 chars)");
+
+    // Rate limit: check for recent messages from this user
+    const recentMessages = await ctx.db
+      .query("messages")
+      .filter((q: any) => q.eq(q.field("userId"), userId))
+      .order("desc")
+      .take(1);
+    if (recentMessages.length > 0) {
+      const elapsed = Date.now() - recentMessages[0]._creationTime;
+      if (elapsed < RATE_LIMIT_MS) {
+        const wait = Math.ceil((RATE_LIMIT_MS - elapsed) / 1000);
+        throw new Error(`Slow down! Please wait ${wait} seconds before sending another message.`);
+      }
+    }
+
     const cleanSiteUrl = sanitizeUrl(siteUrl);
     const cleanButtonUrl = sanitizeUrl(buttonUrl);
+
+    // Admin messages are auto-approved
+    const admin = await isAdmin(ctx);
     await ctx.db.insert("messages", {
       body,
       author,
-      userId: userId ?? undefined,
+      userId,
       siteUrl: cleanSiteUrl,
       buttonUrl: cleanButtonUrl,
+      approved: admin ? true : false,
     });
   },
 });
