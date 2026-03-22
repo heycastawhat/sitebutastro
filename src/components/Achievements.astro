@@ -146,6 +146,14 @@
             name: "Loyal Visitor",
             desc: "Visited on 3 different days",
         },
+        tool_fool: {
+            name: "Tool Fool",
+            desc: "Visited the Tools page",
+        },
+        same_setup: {
+            name: "Same Setup",
+            desc: "Visited from a Mac, just like me",
+        },
         completionist: {
             name: "Completionist",
             desc: "Unlocked every other achievement",
@@ -306,6 +314,16 @@
     // Loyal Visitor
     if (daysVisited.size >= 3) {
         unlock("loyal_visitor");
+    }
+
+    // Tool Fool
+    if (path === "/Tools") {
+        unlock("tool_fool");
+    }
+
+    // Same Setup — visiting from a Mac
+    if (/Macintosh|Mac OS X|iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        unlock("same_setup");
     }
 
     // Egg hunter (check on load too)
