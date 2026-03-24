@@ -223,6 +223,10 @@
         unlocked.add(id);
         localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
         showToast(id);
+        (window as any).posthog?.capture("achievement_unlocked", {
+            achievement_id: id,
+            achievement_name: ACHIEVEMENTS[id].name,
+        });
     }
 
     // --- Track visits ---

@@ -41,6 +41,10 @@ const { Content } = await render(post);
   </article>
 </Layout>
 
+<script is:inline define:vars={{ slug: post.id, title: post.data.title, tags: post.data.tags ?? [] }}>
+  window.posthog?.capture('blog_post_viewed', { slug, title, tags });
+</script>
+
 <style>
   .post {
     max-width: 800px;

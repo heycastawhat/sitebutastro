@@ -6,3 +6,7 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Contact — Site V4" footerType="default" footerComment="Why do you need to contact me?">
     <ContactMe />
 </Layout>
+
+<script is:inline>
+  window.posthog?.capture('contact_page_viewed');
+</script>

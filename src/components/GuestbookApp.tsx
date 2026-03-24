@@ -132,6 +132,12 @@ export default function GuestbookApp() {
         message: `G'day ${viewer.name}! You've successfully signed in. You can now leave a message in the guestbook.`,
         icon: "🖥️",
       });
+      // Identify the user in PostHog on sign-in
+      (window as any).posthog?.identify(viewer.name, { provider: viewer.provider });
+    }
+    if (!isLoading && !isAuthenticated && wasAuthenticated.current) {
+      // Reset PostHog session on sign-out
+      (window as any).posthog?.reset();
     }
     if (!isLoading) {
       wasAuthenticated.current = isAuthenticated;
@@ -158,6 +164,10 @@ export default function GuestbookApp() {
         message: "Your message has been submitted and is pending approval. Thanks for signing!",
         icon: "✉️",
       });
+      (window as any).posthog?.capture("guestbook_message_submitted", {
+        has_site_url: !!siteUrl.trim(),
+        has_button_url: !!buttonUrl.trim(),
+      });
       if ((window as any).__unlockAchievement) {
         (window as any).__unlockAchievement("i_signed");
       }
@@ -169,6 +179,7 @@ export default function GuestbookApp() {
         message,
         icon: "⚠️",
       });
+      (window as any).posthog?.captureException(err);
     } finally {
       setIsSubmitting(false);
     }
@@ -193,7 +204,10 @@ export default function GuestbookApp() {
                 G'day {viewer?.name}, you're signed in with {viewer?.provider}
               </span>
               <button
-                onClick={() => signOut()}
+                onClick={() => {
+                  (window as any).posthog?.capture("guestbook_sign_out_clicked");
+                  signOut();
+                }}
                 style={{ fontSize: "0.7rem", padding: "2px 4px", cursor: "pointer" }}
               >
                 Sign Out
@@ -284,7 +298,10 @@ export default function GuestbookApp() {
               <p style={{ marginBottom: "1rem" }}>Sign in to leave a message!</p>
               <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center", flexWrap: "wrap" }}>
                 <button
-                  onClick={() => signIn("github", { redirectTo: window.location.href })}
+                  onClick={() => {
+                    (window as any).posthog?.capture("guestbook_sign_in_clicked", { provider: "github" });
+                    signIn("github", { redirectTo: window.location.href });
+                  }}
                   style={{
                     backgroundColor: "#c0c0c0",
                     border: "2px solid",
@@ -300,7 +317,10 @@ export default function GuestbookApp() {
                   Sign in with GitHub
                 </button>
                 <button
-                  onClick={() => signIn("hackclub", { redirectTo: window.location.href })}
+                  onClick={() => {
+                    (window as any).posthog?.capture("guestbook_sign_in_clicked", { provider: "hackclub" });
+                    signIn("hackclub", { redirectTo: window.location.href });
+                  }}
                   style={{
                     backgroundColor: "#c0c0c0",
                     border: "2px solid",
