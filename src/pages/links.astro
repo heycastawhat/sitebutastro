@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+import LinksWrapper from '../components/LinksWrapper';
+---
+
+<Layout title="Cool Links — Site V4" footerType="default" footerComment="cool stuff on the internet">
+  <main>
+    <h1>Cool Links</h1>
+    <p>Stuff I think is cool on the internet.</p>
+    <LinksWrapper client:only="react" />
+  </main>
+</Layout>
+
+<style>
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--ctp-text);
+  }
+
+  h1 {
+    color: var(--ctp-lavender);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--ctp-subtext0);
+    margin-bottom: 2rem;
+  }
+</style>

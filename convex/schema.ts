@@ -12,4 +12,10 @@ export default defineSchema({
     siteUrl: v.optional(v.string()),
     buttonUrl: v.optional(v.string()),
   }),
+  links: defineTable({
+    title: v.string(),
+    url: v.string(),
+    description: v.optional(v.string()),
+    category: v.optional(v.string()),
+  }),
 });

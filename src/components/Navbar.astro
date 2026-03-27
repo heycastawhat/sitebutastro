@@ -13,22 +13,28 @@ const currentPath = Astro.url.pathname;
                 <a href="/" class={`nav-link ${currentPath === "/" ? "active" : ""}`}>Home</a>
             </li>
             <li class="nav-item">
-                <a href="/Contact" class={`nav-link ${currentPath.startsWith("/Contact") ? "active" : ""}`}>Contact</a>
+                <a href="/blog" class={`nav-link ${currentPath.startsWith("/blog") ? "active" : ""}`}>Blog</a>
+            </li>
+            <li class="nav-item">
+                <a href="/Projects" class={`nav-link ${currentPath.startsWith("/Projects") ? "active" : ""}`}>Projects</a>
+            </li>
+            <li class="nav-item">
+                <a href="/Tools" class={`nav-link ${currentPath.startsWith("/Tools") ? "active" : ""}`}>Tools</a>
             </li>
             <li class="nav-item">
                 <a href="/Stats" class={`nav-link ${currentPath.startsWith("/Stats") ? "active" : ""}`}>Stats</a>
             </li>
             <li class="nav-item">
-                <a href="/blog" class={`nav-link ${currentPath.startsWith("/blog") ? "active" : ""}`}>Blog</a>
-            </li>
-            <li class="nav-item">
-                <a href="/Tools" class={`nav-link ${currentPath.startsWith("/Tools") ? "active" : ""}`}>Tools</a>
+                <a href="/links" class={`nav-link ${currentPath.startsWith("/links") ? "active" : ""}`}>Links</a>
             </li>
             <li class="nav-item">
                 <a href="/webring" class={`nav-link ${currentPath.startsWith("/webring") ? "active" : ""}`}>Webring</a>
             </li>
             <li class="nav-item">
                 <a href="/guestbook" class={`nav-link ${currentPath.startsWith("/guestbook") ? "active" : ""}`}>Guestbook</a>
+            </li>
+            <li class="nav-item">
+                <a href="/Contact" class={`nav-link ${currentPath.startsWith("/Contact") ? "active" : ""}`}>Contact</a>
             </li>
         </ul>
     </div>
@@ -130,32 +136,17 @@ const currentPath = Astro.url.pathname;
     .nav-link {
         color: var(--ctp-text);
         text-decoration: none;
-        transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+        background-color: transparent;
+        border: 1px solid var(--ctp-surface2, var(--ctp-surface1));
         padding: 0.5rem 1rem;
         border-radius: 8px;
-        position: relative;
-    }
-
-    .nav-link::after {
-        content: '';
-        position: absolute;
-        bottom: 2px;
-        left: 50%;
-        width: 0;
-        height: 2px;
-        background: var(--ctp-blue);
-        border-radius: 1px;
-        transition: width 0.25s ease, left 0.25s ease;
-    }
-
-    .nav-link:hover::after {
-        width: 60%;
-        left: 20%;
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
     }
 
     .nav-link:hover {
         color: var(--ctp-blue);
         background-color: var(--ctp-surface1);
+        border-color: var(--ctp-blue);
         transform: translateY(-1px);
     }
 
@@ -166,11 +157,7 @@ const currentPath = Astro.url.pathname;
     .nav-link.active {
         color: var(--ctp-blue);
         background-color: var(--ctp-surface1);
-    }
-
-    .nav-link.active::after {
-        width: 60%;
-        left: 20%;
+        border-color: var(--ctp-blue);
     }
 
     @media (max-width: 768px) {
@@ -179,16 +166,42 @@ const currentPath = Astro.url.pathname;
         }
 
         .nav-menu {
-            display: none;
             flex-direction: column;
             width: 100%;
-            padding-top: 1rem;
+            padding-top: 0;
             gap: 0.25rem;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.35s ease, opacity 0.25s ease, padding-top 0.35s ease;
         }
 
         .nav-menu.open {
-            display: flex;
+            max-height: 500px;
+            opacity: 1;
+            padding-top: 1rem;
         }
+
+        .nav-item {
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .nav-menu.open .nav-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .nav-menu.open .nav-item:nth-child(1) { transition-delay: 0.05s; }
+        .nav-menu.open .nav-item:nth-child(2) { transition-delay: 0.08s; }
+        .nav-menu.open .nav-item:nth-child(3) { transition-delay: 0.11s; }
+        .nav-menu.open .nav-item:nth-child(4) { transition-delay: 0.14s; }
+        .nav-menu.open .nav-item:nth-child(5) { transition-delay: 0.17s; }
+        .nav-menu.open .nav-item:nth-child(6) { transition-delay: 0.20s; }
+        .nav-menu.open .nav-item:nth-child(7) { transition-delay: 0.23s; }
+        .nav-menu.open .nav-item:nth-child(8) { transition-delay: 0.26s; }
+        .nav-menu.open .nav-item:nth-child(9) { transition-delay: 0.29s; }
 
         .nav-link {
             padding: 0.75rem 1rem;

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery, useMutation, useConvexAuth } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
@@ -10,6 +11,9 @@ export default function AdminPanel() {
   const pending = useQuery(api.messages.listPending);
   const remove = useMutation(api.messages.remove);
   const approve = useMutation(api.messages.approve);
+  const links = useQuery(api.links.list);
+  const addLink = useMutation(api.links.add);
+  const removeLink = useMutation(api.links.remove);
 
   if (isLoading) return <p style={{ color: "#cdd6f4" }}>Loading...</p>;
 
@@ -93,6 +97,9 @@ export default function AdminPanel() {
         </>
       )}
 
+      {/* Links Management */}
+      <LinksAdmin links={links ?? []} onAdd={addLink} onRemove={removeLink} />
+
       {/* Approved Messages */}
       <h2 style={{ color: "#89b4fa", fontSize: "1.2rem", marginBottom: "1rem", marginTop: "1.5rem" }}>Approved Messages</h2>
       {messages.length > 0 ? (
@@ -157,6 +164,105 @@ function MessageCard({ msg, onDelete, onApprove, isPending }: {
     </div>
   );
 }
+
+function LinksAdmin({ links, onAdd, onRemove }: {
+  links: any[];
+  onAdd: (args: { title: string; url: string; description?: string; category?: string }) => Promise<any>;
+  onRemove: (args: { linkId: any }) => Promise<any>;
+}) {
+  const [title, setTitle] = useState("");
+  const [url, setUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  const handleAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !url.trim()) return;
+    setAdding(true);
+    try {
+      await onAdd({
+        title: title.trim(),
+        url: url.trim(),
+        description: description.trim() || undefined,
+        category: category.trim() || undefined,
+      });
+      setTitle("");
+      setUrl("");
+      setDescription("");
+      setCategory("");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: "2rem" }}>
+      <h2 style={{ color: "#a6e3a1", fontSize: "1.2rem", marginBottom: "1rem" }}>Cool Links</h2>
+
+      <form onSubmit={handleAdd} style={{
+        backgroundColor: "#313244",
+        border: "1px solid #45475a",
+        borderRadius: "10px",
+        padding: "1rem",
+        marginBottom: "1rem",
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
+      }}>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" required
+            style={inputStyle} />
+          <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL" required type="url"
+            style={inputStyle} />
+        </div>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)"
+            style={inputStyle} />
+          <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category (optional)"
+            style={inputStyle} />
+        </div>
+        <button type="submit" disabled={adding} style={{ ...btn, alignSelf: "flex-start", backgroundColor: "#a6e3a1", color: "#1e1e2e" }}>
+          {adding ? "Adding..." : "Add Link"}
+        </button>
+      </form>
+
+      {links.map((link) => (
+        <div key={link._id} style={{
+          backgroundColor: "#313244",
+          border: "1px solid #45475a",
+          borderRadius: "10px",
+          padding: "0.75rem 1rem",
+          marginBottom: "0.5rem",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}>
+          <div>
+            <span style={{ color: "#cdd6f4", fontWeight: "bold" }}>{link.title}</span>
+            {link.category && <span style={{ color: "#6c7086", marginLeft: "0.5rem", fontSize: "0.8rem" }}>({link.category})</span>}
+            <div style={{ color: "#89b4fa", fontSize: "0.8rem" }}>{link.url}</div>
+            {link.description && <div style={{ color: "#a6adc8", fontSize: "0.8rem" }}>{link.description}</div>}
+          </div>
+          <button onClick={() => onRemove({ linkId: link._id })} style={{ ...btn, backgroundColor: "#f38ba8", color: "#1e1e2e" }}>
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  flex: 1,
+  padding: "6px 10px",
+  backgroundColor: "#1e1e2e",
+  border: "1px solid #45475a",
+  borderRadius: "6px",
+  color: "#cdd6f4",
+  fontFamily: '"ABeeZee", sans-serif',
+  fontSize: "0.85rem",
+};
 
 const btn: React.CSSProperties = {
   backgroundColor: "#313244",

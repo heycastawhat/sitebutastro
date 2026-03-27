@@ -1,0 +1,137 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+    title="Projects — Site V4"
+    footerType="default"
+    footerComment="things i've made"
+>
+    <div class="projects-container">
+        <h1>My Projects</h1>
+
+        <section class="projects-section">
+            <h2 class="section-title">Software</h2>
+            <div class="projects-grid">
+                <a href="https://github.com/heycastawhat/sitebutastro" class="project-card">
+                    <h3 class="project-name">Site V4 (astro edition)</h3>
+                    <p class="project-description">A personal website built with something thats not plain HTML.</p>
+                    <div class="project-tags">
+                        <span class="tag">Astro</span>
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                    </div>
+                </a>
+                <a href="https://github.com/heycastawhat/slack-annoyance" class="project-card">
+                    <h3 class="project-name">Slack Annoyance</h3>
+                    <p class="project-description">A do-it-all Slack bot made in Python.</p>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">Slack</span>
+                    </div>
+                </a>
+                <a href="https://github.com/heycastawhat/southbag-online-bot" class="project-card">
+                    <h3 class="project-name">Southbag Slack Banking</h3>
+                    <p class="project-description">A slack economy bot using Convex. Features include a currency system, robbing, and a support bot. Made as a joke to test out amp.</p>
+                    <div class="project-tags">
+                        <span class="tag">Slack</span>
+                    </div>
+                </a>
+                <a href="https://github.com/heycastawhat/southbag-online-banking" class="project-card">
+                    <h3 class="project-name">Southbag Online Banking</h3>
+                    <p class="project-description">A satirical website for a fake bank with a medium to large amount of security issues.</p>
+                    <div class="project-tags">
+                        <span class="tag">HTML</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <h2 class="section-title">Hardware</h2>
+        <div class="projects-grid">
+            <p>software is better than hardware /j</p>
+        </div>
+
+    </div>
+</Layout>
+
+<style>
+    .projects-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    h1 {
+        color: var(--ctp-text);
+        margin-bottom: 2rem;
+        font-size: 2rem;
+    }
+
+    .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .project-card {
+        background: var(--ctp-surface0);
+        border: 1px solid var(--ctp-surface1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .project-card:hover {
+        border-color: var(--ctp-mauve);
+        transform: translateY(-2px);
+    }
+
+    .projects-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+        color: var(--ctp-mauve);
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--ctp-surface1);
+        padding-bottom: 0.5rem;
+    }
+
+    .project-name {
+        color: var(--ctp-text);
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+    }
+
+    .project-description {
+        color: var(--ctp-subtext0);
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0 0 1rem 0;
+    }
+
+    .project-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .tag {
+        background: var(--ctp-surface1);
+        color: var(--ctp-blue);
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.75rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
