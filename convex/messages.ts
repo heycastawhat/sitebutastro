@@ -155,6 +155,104 @@ export const checkAdmin = query({
   },
 });
 
+// List replies for a message
+export const listReplies = query({
+  args: { messageId: v.id("messages") },
+  handler: async (ctx, { messageId }) => {
+    const replies = await ctx.db
+      .query("replies")
+      .withIndex("by_message", (q) => q.eq("messageId", messageId))
+      .order("asc")
+      .take(100);
+
+    const approved = replies.filter((r) => r.approved === true);
+
+    return Promise.all(
+      approved.map(async (reply) => {
+        const user = await ctx.db.get(reply.userId);
+        return { ...reply, author: user?.name ?? "Anonymous" };
+      }),
+    );
+  },
+});
+
+// Send a reply to a message
+export const sendReply = mutation({
+  args: {
+    messageId: v.id("messages"),
+    body: v.string(),
+  },
+  handler: async (ctx, { messageId, body }) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Must be signed in to reply");
+    if (body.length > 500) throw new Error("Reply too long (max 500 chars)");
+
+    // Rate limit: check for recent replies from this user
+    const recentReplies = await ctx.db
+      .query("replies")
+      .filter((q: any) => q.eq(q.field("userId"), userId))
+      .order("desc")
+      .take(1);
+    if (recentReplies.length > 0) {
+      const elapsed = Date.now() - recentReplies[0]._creationTime;
+      if (elapsed < RATE_LIMIT_MS) {
+        const wait = Math.ceil((RATE_LIMIT_MS - elapsed) / 1000);
+        throw new Error(`Slow down! Please wait ${wait} seconds before replying again.`);
+      }
+    }
+
+    const admin = await isAdmin(ctx);
+    await ctx.db.insert("replies", {
+      messageId,
+      userId,
+      body,
+      approved: admin ? true : false,
+    });
+  },
+});
+
+// Admin-only: list pending replies
+export const listPendingReplies = query({
+  args: {},
+  handler: async (ctx) => {
+    const admin = await isAdmin(ctx);
+    if (!admin) return [];
+    const replies = await ctx.db.query("replies").order("desc").take(200);
+    const pending = replies.filter((r) => r.approved !== true);
+    return Promise.all(
+      pending.map(async (reply) => {
+        const user = await ctx.db.get(reply.userId);
+        const message = await ctx.db.get(reply.messageId);
+        return {
+          ...reply,
+          author: user?.name ?? "Anonymous",
+          parentBody: message?.body?.slice(0, 50) ?? "[deleted]",
+        };
+      }),
+    );
+  },
+});
+
+// Admin-only: approve a reply
+export const approveReply = mutation({
+  args: { replyId: v.id("replies") },
+  handler: async (ctx, { replyId }) => {
+    const admin = await isAdmin(ctx);
+    if (!admin) throw new Error("Unauthorized");
+    await ctx.db.patch(replyId, { approved: true });
+  },
+});
+
+// Admin-only: delete a reply
+export const removeReply = mutation({
+  args: { replyId: v.id("replies") },
+  handler: async (ctx, { replyId }) => {
+    const admin = await isAdmin(ctx);
+    if (!admin) throw new Error("Unauthorized");
+    await ctx.db.delete(replyId);
+  },
+});
+
 // Admin-only: delete a message
 export const remove = mutation({
   args: { messageId: v.id("messages") },

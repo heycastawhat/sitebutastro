@@ -108,6 +108,156 @@ function isSafeUrl(url: string | undefined): boolean {
   }
 }
 
+function ReplyThread({ messageId, isAuthenticated, isAdmin }: {
+  messageId: any;
+  isAuthenticated: boolean;
+  isAdmin: boolean | undefined;
+}) {
+  const replies = useQuery(api.messages.listReplies, { messageId });
+  const sendReply = useMutation(api.messages.sendReply);
+  const removeReply = useMutation(api.messages.removeReply);
+  const [open, setOpen] = useState(false);
+  const [replyBody, setReplyBody] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [dialog, setDialog] = useState<{ title: string; message: string; icon: string } | null>(null);
+
+  const replyCount = replies?.length ?? 0;
+
+  const handleReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!replyBody.trim()) return;
+    setSubmitting(true);
+    try {
+      await sendReply({ messageId, body: replyBody });
+      setReplyBody("");
+      setDialog({
+        title: "Reply Sent!",
+        message: "Your reply has been submitted and is pending approval.",
+        icon: "💬",
+      });
+    } catch (err: any) {
+      setDialog({
+        title: "Error",
+        message: err?.message || "Failed to send reply.",
+        icon: "⚠️",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div style={{ padding: "0 2px 2px" }}>
+      {dialog && (
+        <Win95Dialog
+          title={dialog.title}
+          message={dialog.message}
+          icon={dialog.icon}
+          onClose={() => setDialog(null)}
+        />
+      )}
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          background: "none",
+          border: "none",
+          color: "#000080",
+          cursor: "pointer",
+          fontSize: "0.8rem",
+          fontFamily: '"ABeeZee", sans-serif',
+          padding: "4px 8px",
+          textDecoration: "underline",
+        }}
+      >
+        {open ? "Hide" : ""} {replyCount > 0 ? `💬 ${replyCount} ${replyCount === 1 ? "reply" : "replies"}` : "💬 Reply"}
+      </button>
+
+      {open && (
+        <div style={{ marginTop: "4px", paddingLeft: "12px", borderLeft: "2px solid #000080" }}>
+          {replies && replies.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "8px" }}>
+              {replies.map((reply: any) => (
+                <div
+                  key={reply._id}
+                  style={{
+                    backgroundColor: "#efefef",
+                    border: "1px solid #808080",
+                    padding: "6px 8px",
+                    fontSize: "0.85rem",
+                    fontFamily: '"ABeeZee", sans-serif',
+                    color: "#000",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2px" }}>
+                    <span style={{ fontWeight: "bold", fontSize: "0.8rem" }}>
+                      {reply.author} <span style={{ fontWeight: "normal", opacity: 0.6 }}>· {new Date(reply._creationTime).toLocaleDateString()}</span>
+                    </span>
+                    {isAdmin && (
+                      <button
+                        onClick={() => removeReply({ replyId: reply._id })}
+                        title="Delete reply"
+                        style={{ background: "none", border: "none", color: "#ff6b6b", cursor: "pointer", fontSize: "0.75rem", padding: "0 2px" }}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                  <div style={{ whiteSpace: "pre-wrap" }}>{reply.body}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {isAuthenticated ? (
+            <form onSubmit={handleReply} style={{ display: "flex", gap: "4px", alignItems: "flex-start" }}>
+              <input
+                type="text"
+                value={replyBody}
+                onChange={(e) => setReplyBody(e.target.value)}
+                placeholder="Write a reply..."
+                maxLength={500}
+                style={{
+                  flex: 1,
+                  padding: "4px 6px",
+                  border: "2px solid",
+                  borderColor: "#808080 #dfdfdf #dfdfdf #808080",
+                  backgroundColor: "white",
+                  color: "black",
+                  fontFamily: '"ABeeZee", sans-serif',
+                  fontSize: "0.8rem",
+                  boxShadow: "inset 1px 1px 0 #000000, inset -1px -1px 0 #ffffff",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  backgroundColor: "#c0c0c0",
+                  border: "2px solid",
+                  borderColor: "#dfdfdf #808080 #808080 #dfdfdf",
+                  boxShadow: "inset 1px 1px 0 #ffffff, inset -1px -1px 0 #000000",
+                  padding: "4px 10px",
+                  cursor: submitting ? "not-allowed" : "pointer",
+                  fontWeight: "bold",
+                  fontFamily: '"ABeeZee", sans-serif',
+                  fontSize: "0.8rem",
+                  color: submitting ? "#808080" : "black",
+                }}
+              >
+                {submitting ? "..." : "Reply"}
+              </button>
+            </form>
+          ) : (
+            <p style={{ fontSize: "0.8rem", color: "#666", margin: "4px 0", fontFamily: '"ABeeZee", sans-serif' }}>
+              Sign in to reply
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function GuestbookApp() {
   const { isAuthenticated, isLoading } = useConvexAuth();
   const { signIn, signOut } = useAuthActions();
@@ -411,6 +561,11 @@ export default function GuestbookApp() {
                   </div>
                 )}
               </div>
+              <ReplyThread
+                messageId={msg._id}
+                isAuthenticated={isAuthenticated}
+                isAdmin={isAdmin}
+              />
             </div>
           ))
         )}

@@ -12,6 +12,12 @@ export default defineSchema({
     siteUrl: v.optional(v.string()),
     buttonUrl: v.optional(v.string()),
   }),
+  replies: defineTable({
+    messageId: v.id("messages"),
+    userId: v.id("users"),
+    body: v.string(),
+    approved: v.optional(v.boolean()),
+  }).index("by_message", ["messageId"]),
   links: defineTable({
     title: v.string(),
     url: v.string(),

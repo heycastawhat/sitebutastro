@@ -9,8 +9,11 @@ export default function AdminPanel() {
   const isAdmin = useQuery(api.messages.checkAdmin);
   const messages = useQuery(api.messages.list);
   const pending = useQuery(api.messages.listPending);
+  const pendingReplies = useQuery(api.messages.listPendingReplies);
   const remove = useMutation(api.messages.remove);
   const approve = useMutation(api.messages.approve);
+  const approveReply = useMutation(api.messages.approveReply);
+  const removeReply = useMutation(api.messages.removeReply);
   const links = useQuery(api.links.list);
   const addLink = useMutation(api.links.add);
   const removeLink = useMutation(api.links.remove);
@@ -77,7 +80,18 @@ export default function AdminPanel() {
           textAlign: "center",
         }}>
           <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#fab387" }}>{pending?.length ?? 0}</div>
-          <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Pending</div>
+          <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Pending Messages</div>
+        </div>
+        <div style={{
+          flex: 1,
+          backgroundColor: "#313244",
+          border: "1px solid #45475a",
+          borderRadius: "10px",
+          padding: "1.25rem",
+          textAlign: "center",
+        }}>
+          <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#cba6f7" }}>{pendingReplies?.length ?? 0}</div>
+          <div style={{ color: "#a6adc8", fontSize: "0.85rem", marginTop: "0.25rem" }}>Pending Replies</div>
         </div>
       </div>
 
@@ -93,6 +107,45 @@ export default function AdminPanel() {
               onApprove={() => approve({ messageId: msg._id })}
               onDelete={() => remove({ messageId: msg._id })}
             />
+          ))}
+        </>
+      )}
+
+      {/* Pending Replies */}
+      {pendingReplies && pendingReplies.length > 0 && (
+        <>
+          <h2 style={{ color: "#cba6f7", fontSize: "1.2rem", marginBottom: "1rem" }}>Pending Replies</h2>
+          {pendingReplies.map((reply: any) => (
+            <div key={reply._id} style={{
+              backgroundColor: "#313244",
+              border: "1px solid #cba6f7",
+              borderRadius: "10px",
+              padding: "1rem 1.25rem",
+              marginBottom: "0.75rem",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: "#cba6f7", fontWeight: "bold", fontSize: "0.9rem" }}>
+                    {reply.author}
+                    <span style={{ color: "#6c7086", fontWeight: "normal", marginLeft: "0.5rem", fontSize: "0.8rem" }}>
+                      {new Date(reply._creationTime).toLocaleString()}
+                    </span>
+                  </div>
+                  <div style={{ color: "#6c7086", fontSize: "0.75rem", marginTop: "0.25rem" }}>
+                    replying to: "{reply.parentBody}"
+                  </div>
+                  <p style={{ color: "#cdd6f4", margin: "0.5rem 0 0", whiteSpace: "pre-wrap" }}>{reply.body}</p>
+                </div>
+                <div style={{ display: "flex", gap: "0.5rem", marginLeft: "1rem", flexShrink: 0 }}>
+                  <button onClick={() => approveReply({ replyId: reply._id })} style={{ ...btn, backgroundColor: "#a6e3a1", color: "#1e1e2e" }}>
+                    ✓
+                  </button>
+                  <button onClick={() => removeReply({ replyId: reply._id })} style={{ ...btn, backgroundColor: "#f38ba8", color: "#1e1e2e" }}>
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
           ))}
         </>
       )}
