@@ -133,13 +133,13 @@ function ReplyThread({ messageId, isAuthenticated, isAdmin }: {
       setDialog({
         title: "Reply Sent!",
         message: "Your reply has been submitted and is pending approval.",
-        icon: "💬",
+        icon: "",
       });
     } catch (err: any) {
       setDialog({
         title: "Error",
         message: err?.message || "Failed to send reply.",
-        icon: "⚠️",
+        icon: "",
       });
     } finally {
       setSubmitting(false);
@@ -169,7 +169,7 @@ function ReplyThread({ messageId, isAuthenticated, isAdmin }: {
           textDecoration: "underline",
         }}
       >
-        {open ? "Hide" : ""} {replyCount > 0 ? `💬 ${replyCount} ${replyCount === 1 ? "reply" : "replies"}` : "💬 Reply"}
+        {open ? "Hide" : ""} {replyCount > 0 ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}` : "Reply"}
       </button>
 
       {open && (
@@ -280,7 +280,7 @@ export default function GuestbookApp() {
       setDialog({
         title: "Welcome!",
         message: `G'day ${viewer.name}! You've successfully signed in. You can now leave a message in the guestbook.`,
-        icon: "🖥️",
+        icon: "",
       });
       // Identify the user in PostHog on sign-in
       (window as any).posthog?.identify(viewer.name, { provider: viewer.provider });
@@ -312,7 +312,7 @@ export default function GuestbookApp() {
       setDialog({
         title: "Message Sent!",
         message: "Your message has been submitted and is pending approval. Thanks for signing!",
-        icon: "✉️",
+        icon: "",
       });
       (window as any).posthog?.capture("guestbook_message_submitted", {
         has_site_url: !!siteUrl.trim(),
@@ -327,7 +327,7 @@ export default function GuestbookApp() {
       setDialog({
         title: "Error",
         message,
-        icon: "⚠️",
+        icon: "",
       });
       (window as any).posthog?.captureException(err);
     } finally {
