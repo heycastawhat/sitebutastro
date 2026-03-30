@@ -1,5 +1,6 @@
 ## Personal Site (v4)
 ---
+# ATTENTION: IN THE PROCESS OF SWITCHING TO GITLAB: https://gitlab.com/castawhat/sitebutastro
 This is version 4, yes 4 of my personal site, this time in astro.
 ---
 # Its got:
